@@ -1,0 +1,432 @@
+@import "tailwindcss";
+
+/*
+ * ============================================================================
+ *  WHOBREY STUDIOS — DESIGN TOKENS
+ * ----------------------------------------------------------------------------
+ *  This file is the single source of truth for the visual system. When the
+ *  client delivers their final palette, repaint the brand by editing only the
+ *  values under :root — every component pulls from these tokens.
+ *
+ *  Token groups:
+ *    1. Base palette (obsidian neutrals + brand placeholders)
+ *    2. Surfaces / borders / text
+ *    3. Brand + role accents
+ *    4. Status palette (semantic, palette-independent)
+ *    5. Effects (shadow / ring / blur)
+ *    6. Motion (duration / easing)
+ * ============================================================================
+ */
+
+:root {
+  /* --- 1. Base palette --------------------------------------------------- */
+  --obsidian-950: #050507;
+  --obsidian-900: #08080b;
+  --obsidian-800: #0c0c10;
+  --obsidian-700: #14141a;
+  --obsidian-600: #1d1d24;
+  --obsidian-500: #26262e;
+  --obsidian-400: #3a3a44;
+  --obsidian-300: #6c6c78;
+  --obsidian-200: #a4a4af;
+  --obsidian-100: #d6d6dc;
+  --obsidian-50:  #f5f5f7;
+
+  --brand-chartreuse: #d4ff3d;
+  --brand-chartreuse-soft: #b9e633;
+  --brand-magenta: #ff4d8d;
+  --brand-magenta-soft: #f53e7d;
+  --brand-cyan: #5ee9ff;
+  --brand-cyan-soft: #3fcde6;
+  --brand-amber: #fbbf24;
+
+  /* --- 2. Surfaces / borders / text -------------------------------------- */
+  --background: var(--obsidian-900);
+  --foreground: var(--obsidian-50);
+
+  --surface-base:    var(--obsidian-900);
+  --surface-raised:  rgba(24, 24, 30, 0.72);
+  --surface-overlay: rgba(14, 14, 18, 0.92);
+  --surface-sunken:  var(--obsidian-950);
+  --surface-inset:   rgba(255, 255, 255, 0.02);
+
+  --border-subtle:   rgba(255, 255, 255, 0.06);
+  --border-default:  rgba(255, 255, 255, 0.10);
+  --border-strong:   rgba(255, 255, 255, 0.18);
+  --border-emphasis: rgba(212, 255, 61, 0.35);
+
+  --text-primary:   var(--obsidian-50);
+  --text-secondary: var(--obsidian-100);
+  --text-muted:     var(--obsidian-200);
+  --text-faint:     var(--obsidian-300);
+  --text-inverse:   var(--obsidian-950);
+
+  /* --- 3. Brand + role accents ------------------------------------------ */
+  --brand-primary:        var(--brand-chartreuse);
+  --brand-primary-hover:  var(--brand-chartreuse-soft);
+  --brand-primary-glow:   rgba(212, 255, 61, 0.28);
+  --brand-on-primary:     var(--obsidian-950);
+
+  --brand-secondary:      var(--brand-magenta);
+  --brand-secondary-glow: rgba(255, 77, 141, 0.28);
+
+  --accent-cool:   var(--brand-cyan);
+  --accent-cool-glow: rgba(94, 233, 255, 0.24);
+  --accent-warm:   var(--brand-amber);
+  --accent-warm-glow: rgba(251, 191, 36, 0.24);
+
+  --role-admin-tint:  var(--brand-amber);
+  --role-admin-glow:  rgba(251, 191, 36, 0.22);
+  --role-admin-grad:  linear-gradient(135deg, #fbbf24 0%, #ff4d8d 60%, #d4ff3d 100%);
+
+  --role-portal-tint: var(--brand-cyan);
+  --role-portal-glow: rgba(94, 233, 255, 0.22);
+  --role-portal-grad: linear-gradient(135deg, #5ee9ff 0%, #ff4d8d 60%, #d4ff3d 100%);
+
+  /* --- 4. Status palette (semantic, brand-independent) ------------------ */
+  --status-neutral-bg:    rgba(120, 120, 130, 0.16);
+  --status-neutral-fg:    var(--obsidian-100);
+  --status-neutral-ring:  rgba(120, 120, 130, 0.45);
+
+  --status-new-bg:        rgba(99, 102, 241, 0.18);
+  --status-new-fg:        #c7d2fe;
+  --status-new-ring:      rgba(129, 140, 248, 0.50);
+
+  --status-info-bg:       rgba(56, 189, 248, 0.16);
+  --status-info-fg:       #bae6fd;
+  --status-info-ring:     rgba(56, 189, 248, 0.50);
+
+  --status-attention-bg:  rgba(251, 191, 36, 0.16);
+  --status-attention-fg:  #fde68a;
+  --status-attention-ring: rgba(251, 191, 36, 0.55);
+
+  --status-progress-bg:   rgba(167, 139, 250, 0.18);
+  --status-progress-fg:   #ddd6fe;
+  --status-progress-ring: rgba(167, 139, 250, 0.50);
+
+  --status-revision-bg:   rgba(232, 121, 249, 0.16);
+  --status-revision-fg:   #f5d0fe;
+  --status-revision-ring: rgba(232, 121, 249, 0.50);
+
+  --status-payment-bg:    rgba(251, 113, 133, 0.18);
+  --status-payment-fg:    #fecdd3;
+  --status-payment-ring:  rgba(251, 113, 133, 0.55);
+
+  --status-success-bg:    rgba(52, 211, 153, 0.16);
+  --status-success-fg:    #a7f3d0;
+  --status-success-ring:  rgba(52, 211, 153, 0.55);
+
+  --status-delivery-bg:   rgba(34, 197, 94, 0.18);
+  --status-delivery-fg:   #bbf7d0;
+  --status-delivery-ring: rgba(34, 197, 94, 0.55);
+
+  --status-danger-bg:     rgba(244, 63, 94, 0.16);
+  --status-danger-fg:     #fecdd3;
+  --status-danger-ring:   rgba(244, 63, 94, 0.55);
+
+  --status-paused-bg:     rgba(82, 82, 91, 0.32);
+  --status-paused-fg:     var(--obsidian-100);
+  --status-paused-ring:   rgba(120, 120, 130, 0.45);
+
+  /* --- 5. Effects -------------------------------------------------------- */
+  --shadow-floating: 0 24px 60px -30px rgba(0, 0, 0, 0.75), 0 8px 16px -12px rgba(0, 0, 0, 0.5);
+  --shadow-elevated: 0 1px 0 0 rgba(255, 255, 255, 0.04) inset, 0 16px 40px -22px rgba(0, 0, 0, 0.7);
+  --shadow-glass:    0 1px 0 0 rgba(255, 255, 255, 0.04) inset, 0 30px 80px -40px rgba(0, 0, 0, 0.85);
+  --shadow-press:    0 1px 0 0 rgba(255, 255, 255, 0.04) inset;
+  --shadow-glow-primary: 0 0 0 1px rgba(212, 255, 61, 0.45), 0 0 32px -6px rgba(212, 255, 61, 0.55);
+
+  --ring-focus:  0 0 0 2px var(--surface-base), 0 0 0 4px var(--brand-primary);
+  --ring-focus-soft: 0 0 0 2px var(--surface-base), 0 0 0 4px rgba(212, 255, 61, 0.55);
+
+  --blur-glass:    12px;
+  --blur-overlay:  18px;
+
+  /* --- 6. Motion --------------------------------------------------------- */
+  --ease-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out:  cubic-bezier(0.22, 0.61, 0.36, 1);
+  --duration-fast:  140ms;
+  --duration-base:  240ms;
+  --duration-slow:  420ms;
+}
+
+/* ---------------------------------------------------------------------------
+ *  Tailwind v4: expose token-backed utilities via @theme inline.
+ *  This lets you write `bg-surface-raised`, `text-text-muted`, etc.
+ * ------------------------------------------------------------------------- */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-surface-base:    var(--surface-base);
+  --color-surface-raised:  var(--surface-raised);
+  --color-surface-overlay: var(--surface-overlay);
+  --color-surface-sunken:  var(--surface-sunken);
+
+  --color-text-primary:   var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted:     var(--text-muted);
+  --color-text-faint:     var(--text-faint);
+
+  --color-border-subtle:   var(--border-subtle);
+  --color-border-default:  var(--border-default);
+  --color-border-strong:   var(--border-strong);
+  --color-border-emphasis: var(--border-emphasis);
+
+  --color-brand:           var(--brand-primary);
+  --color-brand-hover:     var(--brand-primary-hover);
+  --color-brand-secondary: var(--brand-secondary);
+  --color-accent-cool:     var(--accent-cool);
+  --color-accent-warm:     var(--accent-warm);
+
+  --font-sans:    var(--font-geist-sans);
+  --font-mono:    var(--font-geist-mono);
+  --font-display: var(--font-instrument-serif);
+}
+
+/* ---------------------------------------------------------------------------
+ *  Body — layered ambient mesh on near-black, with subtle film grain.
+ * ------------------------------------------------------------------------- */
+body {
+  background:
+    radial-gradient(1200px 700px at 8% -10%, rgba(255, 77, 141, 0.16), transparent 60%),
+    radial-gradient(1100px 650px at 92% -5%, rgba(94, 233, 255, 0.12), transparent 60%),
+    radial-gradient(900px 600px at 50% 110%, rgba(212, 255, 61, 0.08), transparent 65%),
+    radial-gradient(700px 500px at 80% 80%, rgba(167, 139, 250, 0.07), transparent 70%),
+    var(--background);
+  background-attachment: fixed;
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1   0 0 0 0 1   0 0 0 0 1   0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  opacity: 0.55;
+  mix-blend-mode: overlay;
+}
+
+* {
+  scrollbar-color: var(--obsidian-400) var(--obsidian-700);
+}
+*::selection {
+  background: var(--brand-primary);
+  color: var(--brand-on-primary);
+}
+
+/* Honor the OS-level reduced-motion preference. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ *  Utility classes — the public layout language.
+ *  Component code should prefer these over hand-rolled Tailwind chains.
+ * ------------------------------------------------------------------------- */
+
+.ws-shell {
+  position: relative;
+  z-index: 1;
+  margin-inline: auto;
+  width: 100%;
+  max-width: 80rem;
+  padding-inline: 1.5rem;
+  padding-block: 2.5rem;
+}
+
+.ws-panel {
+  position: relative;
+  border-radius: 1rem;
+  border: 1px solid var(--border-default);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-elevated);
+  backdrop-filter: blur(var(--blur-glass)) saturate(140%);
+  -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(140%);
+}
+
+.ws-glass {
+  position: relative;
+  border-radius: 1rem;
+  border: 1px solid var(--border-subtle);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%),
+              rgba(14, 14, 18, 0.55);
+  box-shadow: var(--shadow-glass);
+  backdrop-filter: blur(var(--blur-overlay)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--blur-overlay)) saturate(160%);
+}
+
+.ws-elevated {
+  border-radius: 1rem;
+  border: 1px solid var(--border-default);
+  background: linear-gradient(180deg, rgba(40, 40, 50, 0.55) 0%, rgba(18, 18, 24, 0.85) 100%);
+  box-shadow: var(--shadow-floating);
+}
+
+.ws-input {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border-default);
+  background: rgba(8, 8, 12, 0.65);
+  padding: 0.625rem 0.85rem;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out);
+}
+.ws-input::placeholder { color: var(--text-faint); }
+.ws-input:hover:not(:disabled):not(:focus) { border-color: var(--border-strong); }
+.ws-input:focus {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px var(--brand-primary-glow);
+}
+.ws-input:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.ws-focus-ring:focus-visible {
+  outline: none;
+  box-shadow: var(--ring-focus-soft);
+}
+
+.ws-hover-lift {
+  transition: transform var(--duration-base) var(--ease-out),
+              box-shadow var(--duration-base) var(--ease-out),
+              border-color var(--duration-base) var(--ease-out);
+}
+.ws-hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-floating);
+  border-color: var(--border-strong);
+}
+
+.ws-press {
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+.ws-press:active { transform: scale(0.985); }
+
+.ws-display {
+  font-family: var(--font-instrument-serif), Georgia, "Times New Roman", serif;
+  font-feature-settings: "ss01", "liga", "calt";
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.ws-mono {
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-feature-settings: "ss01", "ss02", "tnum";
+}
+
+.ws-eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.ws-divider {
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(90deg, transparent 0%, var(--border-default) 50%, transparent 100%);
+}
+
+/* ---------------------------------------------------------------------------
+ *  Skeleton shimmer — token-driven, used by LoadingSkeleton primitive.
+ * ------------------------------------------------------------------------- */
+.ws-shimmer {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(90deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.04) 100%);
+  background-size: 200% 100%;
+  animation: ws-shimmer 1.6s linear infinite;
+  border-radius: 0.5rem;
+}
+@keyframes ws-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ---------------------------------------------------------------------------
+ *  Pop-in / slide entrance for dropdowns, banners, modals.
+ * ------------------------------------------------------------------------- */
+@keyframes ws-pop-in {
+  from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+.ws-pop-in {
+  animation: ws-pop-in var(--duration-base) var(--ease-back) both;
+}
+
+@keyframes ws-fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.ws-fade-up {
+  animation: ws-fade-up var(--duration-base) var(--ease-out) both;
+}
+
+/* ---------------------------------------------------------------------------
+ *  Mesh-gradient hero treatment for marquee surfaces (landing, login).
+ * ------------------------------------------------------------------------- */
+.ws-mesh {
+  position: absolute;
+  inset: -20% -10% auto -10%;
+  height: 70vh;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(45% 60% at 12% 20%, rgba(255, 77, 141, 0.32), transparent 60%),
+    radial-gradient(40% 55% at 85% 15%, rgba(94, 233, 255, 0.24), transparent 65%),
+    radial-gradient(50% 60% at 50% 90%, rgba(212, 255, 61, 0.18), transparent 70%);
+  filter: blur(48px) saturate(140%);
+  opacity: 0.85;
+}
+
+.ws-mesh-soft {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(60% 60% at 0% 0%, rgba(255, 77, 141, 0.18), transparent 60%),
+    radial-gradient(50% 60% at 100% 0%, rgba(94, 233, 255, 0.12), transparent 65%);
+  filter: blur(40px);
+}
+
+/* ---------------------------------------------------------------------------
+ *  Status pipeline meter (portal dashboard).
+ * ------------------------------------------------------------------------- */
+.ws-pipeline {
+  display: flex;
+  gap: 4px;
+  height: 6px;
+}
+.ws-pipeline > span {
+  flex: 1;
+  border-radius: 999px;
+  background: var(--obsidian-600);
+  transition: background var(--duration-base) var(--ease-out);
+}
+.ws-pipeline > span[data-state="done"] {
+  background: var(--brand-primary);
+  box-shadow: 0 0 12px -2px var(--brand-primary-glow);
+}
+.ws-pipeline > span[data-state="active"] {
+  background: linear-gradient(90deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  box-shadow: 0 0 18px -2px var(--brand-primary-glow);
+}

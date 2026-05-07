@@ -1,0 +1,15 @@
+# Local PostgreSQL for Whobrey Studios (see web/.env.example).
+services:
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: whobrey
+      POSTGRES_PASSWORD: whobrey
+      POSTGRES_DB: whobrey_studios
+    volumes:
+      - whobrey_pg_data:/var/lib/postgresql/data
+
+volumes:
+  whobrey_pg_data:

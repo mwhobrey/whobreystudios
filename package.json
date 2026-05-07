@@ -1,0 +1,11 @@
+{
+  "name": "whobrey-studios",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build": "npm run build --prefix web",
+    "lint": "npm run lint --prefix web",
+    "start": "npm run start --prefix web"
+  }
+}

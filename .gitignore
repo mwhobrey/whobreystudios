@@ -1,0 +1,68 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Environment — never commit secrets
+.env
+.env.*
+!.env.example
+!**/.env.example
+!.env.production.example
+!**/.env.production.example
+
+# Next.js / Turbopack / Vite-style
+**/.next/
+**/out/
+**/.turbo/
+
+# Build outputs
+**/build/
+**/dist/
+**/coverage/
+
+# Vercel (link state is local / per machine)
+**/.vercel/
+
+# Prisma — generated client (run `npm run db:generate` or `prisma generate` in web/)
+web/src/generated/prisma/
+
+# Local file uploads (production uses R2; see docs/demo-deployment-runbook.md)
+web/storage/
+
+# Logs & debug
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Yarn / pnp (if introduced later)
+**/.pnp
+**/.pnp.*
+.yarn/*
+!**/.yarn/patches
+!**/.yarn/plugins
+!**/.yarn/releases
+!**/.yarn/versions
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.idea/
+*.swp
+*.swo
+*~
+
+# TypeScript
+*.tsbuildinfo
+
+# Certificates / keys
+*.pem
+
+# Cursor — local workspace metadata
+.cursor/
+
+# Next.js env types (regenerated)
+web/next-env.d.ts

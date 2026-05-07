@@ -1,0 +1,275 @@
+// Whobrey Studios — see DESIGN.md. Auth tables follow Auth.js Prisma adapter.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  admin
+  client
+}
+
+enum ProjectStatus {
+  new_request
+  quote_sent
+  approved
+  in_progress
+  final_revision
+  awaiting_final_payment
+  completed
+  declined
+  on_hold
+  cancelled
+}
+
+enum QuoteStatus {
+  draft
+  sent
+  approved
+  declined
+}
+
+enum FileAssetKind {
+  draft
+  final
+}
+
+enum FileAssetSource {
+  intake
+  revision
+  delivery
+}
+
+enum NotificationType {
+  project_created
+  message_posted
+  quote_sent
+  quote_approved
+  quote_declined
+  file_uploaded
+  project_status_changed
+}
+
+/// Application user. Auth.js fields + `role` / optional `passwordHash` (credentials only).
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String?
+  role          UserRole  @default(client)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+  projects   Project[]
+  messages   Message[]
+  fileAssets FileAsset[]
+  notifications Notification[] @relation("NotificationRecipient")
+  actorNotifications Notification[] @relation("NotificationActor")
+  projectStatusTransitions ProjectStatusTransition[]
+}
+
+/** Singleton app-level settings. Keep row id=1 for easy upsert/get. */
+model WorkspaceSettings {
+  id                       Int      @id @default(1)
+  includedRevisionsDefault Int      @default(2)
+  finalFilesRequirePayment Boolean  @default(true)
+  termsUrl                 String?
+  privacyUrl               String?
+  refundPolicyUrl          String?
+  updatedAt                DateTime @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+/// Client project request / job. Contact fields mirror the intake form; `clientUserId` when logged in.
+/// Admin-managed labels for intake (decisions.md D2). `Project.projectType` stays the snapshot string for search/display.
+model ServiceType {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projects Project[]
+
+  @@index([isActive, sortOrder])
+}
+
+model Project {
+  id                     String         @id @default(cuid())
+  status                 ProjectStatus  @default(new_request)
+  clientUserId           String?
+  clientUser             User?          @relation(fields: [clientUserId], references: [id])
+
+  serviceTypeId          String?
+  serviceType            ServiceType?   @relation(fields: [serviceTypeId], references: [id], onDelete: SetNull)
+
+  fullName               String
+  businessName           String?
+  phone                  String
+  contactEmail           String
+  preferredContactMethod String
+  projectType            String
+  deadline               DateTime?
+  notes                  String?
+
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+
+  quotes     Quote[]
+  messages   Message[]
+  fileAssets FileAsset[]
+  notifications Notification[]
+  statusTransitions ProjectStatusTransition[]
+
+  @@index([status])
+  @@index([contactEmail])
+  @@index([serviceTypeId])
+}
+
+model ProjectStatusTransition {
+  id          String        @id @default(cuid())
+  projectId   String
+  project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  fromStatus  ProjectStatus
+  toStatus    ProjectStatus
+  actorUserId String?
+  actorUser   User?         @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+  reason      String?
+  metadataJson String?
+  createdAt   DateTime      @default(now())
+
+  @@index([projectId, createdAt])
+}
+
+model Notification {
+  id              String           @id @default(cuid())
+  recipientUserId String
+  recipientUser   User             @relation("NotificationRecipient", fields: [recipientUserId], references: [id], onDelete: Cascade)
+  actorUserId     String?
+  actorUser       User?            @relation("NotificationActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+  projectId       String?
+  project         Project?         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  type            NotificationType
+  title           String
+  body            String?
+  payloadJson     String?
+  createdAt       DateTime         @default(now())
+  readAt          DateTime?
+
+  @@index([recipientUserId, createdAt])
+  @@index([recipientUserId, readAt])
+  @@index([projectId, createdAt])
+}
+
+/// Uploaded file metadata; bytes live on disk (local dev) or object storage (production). See DESIGN §4.1 / §6.2.
+model FileAsset {
+  id             String        @id @default(cuid())
+  projectId      String
+  project        Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  uploadedById   String
+  uploadedBy     User          @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
+  kind           FileAssetKind
+  source         FileAssetSource @default(revision)
+  revisionNumber Int           @default(1)
+  originalName   String
+  /** Root-relative path under the configured upload directory (never user-controlled segments). */
+  storageKey     String        @unique
+  mimeType       String
+  sizeBytes      Int
+  createdAt      DateTime      @default(now())
+
+  @@index([projectId, createdAt])
+}
+
+/// Threaded discussion on a project. `parentId` null = top-level; otherwise a reply in the thread.
+model Message {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  body      String   @db.Text
+  parentId  String?
+  parent    Message? @relation("MessageReplies", fields: [parentId], references: [id], onDelete: SetNull)
+  replies   Message[] @relation("MessageReplies")
+  createdAt DateTime @default(now())
+
+  @@index([projectId, createdAt])
+  @@index([parentId])
+}
+
+model Quote {
+  id         String      @id @default(cuid())
+  projectId  String
+  project    Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  version    Int
+  status     QuoteStatus @default(draft)
+  /** Optional per-quote override; when null use WorkspaceSettings.includedRevisionsDefault. */
+  includedRevisions Int?
+  totalCents Int         @default(0)
+  sentAt     DateTime?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  lineItems QuoteLineItem[]
+
+  @@unique([projectId, version])
+  @@index([projectId])
+  @@index([status])
+}
+
+model QuoteLineItem {
+  id              String @id @default(cuid())
+  quoteId         String
+  quote           Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  description     String
+  quantity        Int    @default(1)
+  unitAmountCents Int
+  sortOrder       Int    @default(0)
+
+  @@index([quoteId])
+}
