@@ -58,12 +58,9 @@ Open [http://localhost:3000](http://localhost:3000). Sign in at `/login` with se
 
 ## Git
 
-`create-next-app` added a `.git` folder inside `web/`. For a **single repo at the workspace root**, remove nested git and init at root:
+Remote: `https://github.com/mwhobrey/whobreystudios` (default branch `main`).
 
-```powershell
-Remove-Item -Recurse -Force web\.git
-git init
-```
+If you ever need a clean root repo (e.g. nested `web/.git` from `create-next-app`): remove the nested `.git`, then `git init` at the workspace root.
 
 ## Next build steps (do not require client decisions)
 
