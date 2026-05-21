@@ -30,7 +30,11 @@ export async function postProjectMessageAction(
   }
 
   try {
-    await insertProjectMessage(projectId, { id: user.id, role: user.role }, parsed.data);
+    await insertProjectMessage(
+      projectId,
+      { id: user.id, role: user.role, email: user.email },
+      parsed.data,
+    );
   } catch (e) {
     if (e instanceof ProjectMessageError) {
       if (e.code === "forbidden") return { error: "You can't post on this project." };

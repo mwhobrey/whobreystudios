@@ -157,6 +157,11 @@ flowchart TB
 - [ ] Full manual E2E on local stack + Stripe CLI + Resend test mode
 - [ ] WHO-28 follow-up: rate limit magic-link requests (defer unless trivial)
 
+### Phase 2 status
+
+- [x] WHO-23 templates + `fanOutEventBestEffort` wired to notification hooks
+- [x] Outbox processor uses HTML templates (replaces JSON placeholder)
+
 ---
 
 ## Inngest — when we would add it

@@ -1,6 +1,7 @@
 import "server-only";
 
 import type { PaymentType } from "@/generated/prisma/enums";
+import { clientProjectAccessWhere } from "@/lib/data/projects";
 import { getLatestQuoteForProject } from "@/lib/data/quotes";
 import { cancelPendingPaymentsForProject, createPendingPaymentRecord } from "@/lib/data/payments";
 import { getPrisma } from "@/lib/prisma";
@@ -25,7 +26,10 @@ export async function createProjectCheckoutSession(input: {
   const project = await getPrisma().project.findFirst({
     where: {
       id: input.projectId,
-      clientUserId: input.clientUserId,
+      ...clientProjectAccessWhere({
+        id: input.clientUserId,
+        email: input.clientEmail,
+      }),
     },
     select: { id: true, status: true, projectType: true },
   });

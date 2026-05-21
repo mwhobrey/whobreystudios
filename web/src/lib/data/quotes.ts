@@ -1,12 +1,13 @@
 import "server-only";
 
 import type { Prisma } from "@/generated/prisma/client";
-import { createNotificationsBestEffort, listAdminUserIds } from "@/lib/data/notifications";
+import { fanOutEventBestEffort, listAdminUserIds } from "@/lib/data/notifications";
 import { getPrisma } from "@/lib/prisma";
 import { getIncludedRevisionsDefault } from "@/lib/data/workspace-settings";
 import { quoteLinesPayloadSchema } from "@/lib/schemas/quote";
 import { findPaidDepositForProject } from "@/lib/data/payments";
 import {
+  clientProjectAccessWhere,
   ProjectTransitionError,
   transitionProjectStatus,
 } from "@/lib/data/projects";
@@ -282,15 +283,21 @@ export async function sendQuote(quoteId: string, actorUserId?: string) {
     notifyClient: false,
   });
 
-  if (quote.project.clientUserId) {
-    await createNotificationsBestEffort([quote.project.clientUserId], {
+  const clientRecipients = quote.project.clientUserId ? [quote.project.clientUserId] : [];
+  await fanOutEventBestEffort(
+    clientRecipients,
+    {
       actorUserId: actorUserId ?? null,
       projectId: quote.projectId,
       type: "quote_sent",
       title: "Quote sent",
       body: `Quote v${quote.version} is ready for review.`,
-    });
-  }
+    },
+    {
+      extraEmails: [quote.project.contactEmail],
+      quoteVersion: quote.version,
+    },
+  );
 
   return getPrisma().quote.findUniqueOrThrow({
     where: { id: quoteId },
@@ -298,12 +305,15 @@ export async function sendQuote(quoteId: string, actorUserId?: string) {
   });
 }
 
-export async function approveQuoteForClient(quoteId: string, clientUserId: string) {
+export async function approveQuoteForClient(
+  quoteId: string,
+  client: { id: string; email: string },
+) {
   const quote = await getPrisma().quote.findFirst({
     where: {
       id: quoteId,
       status: "sent",
-      project: { clientUserId },
+      project: clientProjectAccessWhere(client),
     },
     include: { project: true },
   });
@@ -324,7 +334,7 @@ export async function approveQuoteForClient(quoteId: string, clientUserId: strin
     await transitionProjectStatus({
       projectId: quote.projectId,
       to: "awaiting_deposit",
-      actorUserId: clientUserId,
+      actorUserId: client.id,
       notifyClient: false,
     });
   } catch (e) {
@@ -332,21 +342,28 @@ export async function approveQuoteForClient(quoteId: string, clientUserId: strin
   }
 
   const adminIds = await listAdminUserIds();
-  await createNotificationsBestEffort(adminIds, {
-    actorUserId: clientUserId,
-    projectId: quote.projectId,
-    type: "quote_approved",
-    title: "Quote approved",
-    body: `Quote v${quote.version} was approved by client.`,
-  });
+  await fanOutEventBestEffort(
+    adminIds,
+    {
+      actorUserId: client.id,
+      projectId: quote.projectId,
+      type: "quote_approved",
+      title: "Quote approved",
+      body: `Quote v${quote.version} was approved by client.`,
+    },
+    { forAdmin: true, quoteVersion: quote.version },
+  );
 }
 
-export async function declineQuoteForClient(quoteId: string, clientUserId: string) {
+export async function declineQuoteForClient(
+  quoteId: string,
+  client: { id: string; email: string },
+) {
   const quote = await getPrisma().quote.findFirst({
     where: {
       id: quoteId,
       status: "sent",
-      project: { clientUserId },
+      project: clientProjectAccessWhere(client),
     },
     include: { project: true },
   });
@@ -366,7 +383,7 @@ export async function declineQuoteForClient(quoteId: string, clientUserId: strin
     await transitionProjectStatus({
       projectId: quote.projectId,
       to: "declined",
-      actorUserId: clientUserId,
+      actorUserId: client.id,
       notifyClient: false,
     });
   } catch (e) {
@@ -374,13 +391,17 @@ export async function declineQuoteForClient(quoteId: string, clientUserId: strin
   }
 
   const adminIds = await listAdminUserIds();
-  await createNotificationsBestEffort(adminIds, {
-    actorUserId: clientUserId,
-    projectId: quote.projectId,
-    type: "quote_declined",
-    title: "Quote declined",
-    body: `Quote v${quote.version} was declined by client.`,
-  });
+  await fanOutEventBestEffort(
+    adminIds,
+    {
+      actorUserId: client.id,
+      projectId: quote.projectId,
+      type: "quote_declined",
+      title: "Quote declined",
+      body: `Quote v${quote.version} was declined by client.`,
+    },
+    { forAdmin: true, quoteVersion: quote.version },
+  );
 }
 
 export async function resolveDeclinedQuote(input: {

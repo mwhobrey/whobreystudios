@@ -4,10 +4,10 @@ import { randomUUID } from "node:crypto";
 
 import type { Prisma } from "@/generated/prisma/client";
 import type { FileAssetKind, FileAssetSource, UserRole } from "@/generated/prisma/enums";
-import { createNotificationsBestEffort, getProjectAudience } from "@/lib/data/notifications";
+import { fanOutEventBestEffort, getProjectAudience } from "@/lib/data/notifications";
 import { getPrisma } from "@/lib/prisma";
 import { removeStoredFile, saveUploadedBytes } from "@/lib/storage/project-files";
-import { userCanAccessProject } from "@/lib/data/projects";
+import { userCanAccessProject, type ProjectViewer } from "@/lib/data/projects";
 
 const uploaderSelect = {
   id: true,
@@ -76,7 +76,7 @@ export function sanitizeStoredFileName(name: string): string {
 
 export async function listFileAssetsForProject(
   projectId: string,
-  viewer: { id: string; role: UserRole },
+  viewer: ProjectViewer,
 ): Promise<FileAssetWithUploader[]> {
   const ok = await userCanAccessProject(projectId, viewer);
   if (!ok) return [];
@@ -91,7 +91,7 @@ export async function listFileAssetsForProject(
 export async function getFileAssetForDownload(
   projectId: string,
   fileId: string,
-  viewer: { id: string; role: UserRole },
+  viewer: ProjectViewer,
 ) {
   const ok = await userCanAccessProject(projectId, viewer);
   if (!ok) return null;
@@ -112,7 +112,7 @@ export async function getFileAssetForDownload(
 
 export async function createProjectFileUpload(input: {
   projectId: string;
-  viewer: { id: string; role: UserRole };
+  viewer: ProjectViewer;
   originalName: string;
   mimeType: string;
   kind: FileAssetKind;
@@ -183,13 +183,17 @@ export async function createProjectFileUpload(input: {
             ? [audience.clientUserId]
             : []
           : audience.adminUserIds;
-      await createNotificationsBestEffort(recipients, {
+      const extraEmails =
+        input.viewer.role === "admin" && !audience.clientUserId
+          ? [audience.contactEmail]
+          : undefined;
+      await fanOutEventBestEffort(recipients, {
         actorUserId: input.viewer.id,
         projectId: input.projectId,
         type: "file_uploaded",
         title: "Project file uploaded",
         body: `${input.originalName} (${input.kind} r${input.revisionNumber})`,
-      });
+      }, extraEmails ? { extraEmails } : undefined);
     }
   } catch {
     // ignore notification errors

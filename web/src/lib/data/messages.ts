@@ -1,12 +1,11 @@
 import "server-only";
 
 import type { Prisma } from "@/generated/prisma/client";
-import type { UserRole } from "@/generated/prisma/enums";
 import { getPrisma } from "@/lib/prisma";
 import type { CreateMessageBody } from "@/lib/schemas/message";
 import { createMessageBodySchema } from "@/lib/schemas/message";
-import { createNotificationsBestEffort, getProjectAudience } from "@/lib/data/notifications";
-import { userCanAccessProject } from "@/lib/data/projects";
+import { fanOutEventBestEffort, getProjectAudience } from "@/lib/data/notifications";
+import { userCanAccessProject, type ProjectViewer } from "@/lib/data/projects";
 
 const messageAuthorSelect = {
   id: true,
@@ -38,10 +37,7 @@ export class ProjectMessageError extends Error {
   }
 }
 
-export async function listMessagesForProject(
-  projectId: string,
-  viewer: { id: string; role: UserRole },
-) {
+export async function listMessagesForProject(projectId: string, viewer: ProjectViewer) {
   const ok = await userCanAccessProject(projectId, viewer);
   if (!ok) return [];
 
@@ -54,7 +50,7 @@ export async function listMessagesForProject(
 
 export async function insertProjectMessage(
   projectId: string,
-  viewer: { id: string; role: UserRole },
+  viewer: ProjectViewer,
   raw: CreateMessageBody,
 ) {
   const parsed = createMessageBodySchema.safeParse(raw);
@@ -88,16 +84,24 @@ export async function insertProjectMessage(
 
   const audience = await getProjectAudience(projectId);
   if (audience) {
-    const recipients = [...audience.adminUserIds];
-    if (audience.clientUserId) recipients.push(audience.clientUserId);
-    await createNotificationsBestEffort(recipients, {
+    const recipients =
+      viewer.role === "admin"
+        ? audience.clientUserId
+          ? [audience.clientUserId]
+          : []
+        : audience.adminUserIds;
+    const extraEmails =
+      viewer.role === "admin" && !audience.clientUserId
+        ? [audience.contactEmail]
+        : undefined;
+    await fanOutEventBestEffort(recipients, {
       actorUserId: viewer.id,
       projectId,
       type: "message_posted",
       title: "New project message",
       body: created.body.slice(0, 180),
       payload: { parentId: created.parentId },
-    });
+    }, extraEmails ? { extraEmails } : undefined);
   }
 
   return created;

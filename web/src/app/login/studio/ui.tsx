@@ -2,13 +2,13 @@
 
 import { useActionState } from "react";
 import { ArrowRight } from "lucide-react";
-import { magicLinkAction, type MagicLinkActionState } from "./actions";
+import { studioLoginAction, type StudioLoginActionState } from "./actions";
 import { AppButton } from "@/components/ui/app-button";
 import { AlertBanner } from "@/components/ui/alert-banner";
 import { FormField } from "@/components/ui/form-field";
 
-export function MagicLinkForm() {
-  const [state, formAction, pending] = useActionState(magicLinkAction, {} as MagicLinkActionState);
+export function StudioLoginForm() {
+  const [state, formAction, pending] = useActionState(studioLoginAction, {} as StudioLoginActionState);
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
@@ -18,7 +18,17 @@ export function MagicLinkForm() {
           type="email"
           required
           autoComplete="email"
-          placeholder="you@example.com"
+          placeholder="admin@whobrey.local"
+          className="ws-input"
+        />
+      </FormField>
+      <FormField label="Password" required>
+        <input
+          name="password"
+          type="password"
+          required
+          autoComplete="current-password"
+          placeholder="••••••••••"
           className="ws-input"
         />
       </FormField>
@@ -27,10 +37,11 @@ export function MagicLinkForm() {
         type="submit"
         loading={pending}
         size="lg"
+        roleVariant="admin"
         iconRight={<ArrowRight className="h-4 w-4" />}
         className="mt-2 w-full"
       >
-        {pending ? "Sending link" : "Send sign-in link"}
+        {pending ? "Signing in" : "Sign in"}
       </AppButton>
     </form>
   );

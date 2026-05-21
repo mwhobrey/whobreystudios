@@ -2,12 +2,25 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { redirect } from "next/navigation";
 import { getAppUser } from "@/lib/auth";
-import { MagicLinkForm } from "./ui";
+import { AlertBanner } from "@/components/ui/alert-banner";
+import { StudioLoginForm } from "./ui";
 import { Wordmark } from "@/components/brand/wordmark";
 
-export default async function LoginPage() {
+type Props = {
+  searchParams: Promise<{ error?: string }>;
+};
+
+export default async function StudioLoginPage({ searchParams }: Props) {
   const user = await getAppUser();
   if (user) redirect(user.role === "admin" ? "/admin" : "/portal");
+
+  const { error } = await searchParams;
+  const authErrorMessage =
+    error === "AccessDenied"
+      ? "That sign-in method is not available for studio accounts. Use your email and password below."
+      : error
+        ? "Sign-in failed. Try again with your studio credentials."
+        : null;
 
   return (
     <div className="relative isolate min-h-screen overflow-hidden">
@@ -20,20 +33,19 @@ export default async function LoginPage() {
           </Link>
 
           <div className="ws-fade-up max-w-md">
-            <p className="ws-eyebrow text-text-faint">Client portal</p>
+            <p className="ws-eyebrow text-text-faint">Studio operations</p>
             <p className="ws-display mt-6 text-balance text-3xl leading-snug text-text-primary lg:text-4xl">
-              &ldquo;Status that doesn&rsquo;t lie. Files that don&rsquo;t leak. Revisions that
-              don&rsquo;t spiral.&rdquo;
+              Quotes, files, and production status — one honest dashboard.
             </p>
             <p className="mt-6 text-sm text-text-muted">
-              Whobrey Studios runs one workflow across digital assets, vinyl decals, and production
-              jobs — request, quote, approve, produce, deliver, get paid.
+              Admin access uses studio credentials. Client magic links are disabled for staff
+              accounts.
             </p>
           </div>
 
           <div className="flex items-center gap-3 ws-mono text-xs uppercase tracking-[0.22em] text-text-faint">
-            <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--brand-primary)] shadow-[0_0_12px_var(--brand-primary-glow)]" />
-            Magic link sign-in
+            <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--role-admin-tint)] shadow-[0_0_12px_var(--role-admin-glow)]" />
+            Studio sign-in
           </div>
         </aside>
 
@@ -48,24 +60,28 @@ export default async function LoginPage() {
             </Link>
 
             <div className="mt-6 lg:mt-0">
-              <p className="ws-eyebrow text-text-faint">Client sign-in</p>
+              <p className="ws-eyebrow text-text-faint">Studio sign-in</p>
               <h1 className="ws-display mt-3 text-4xl tracking-tight text-text-primary">
-                Check your projects.
+                Welcome back.
               </h1>
               <p className="mt-2 text-sm text-text-muted">
-                Enter the email you used for your project request. We&rsquo;ll send a one-time sign-in
-                link — no password required.
+                Sign in with the studio credentials issued by Whobrey Studios.
               </p>
             </div>
 
             <div className="ws-glass mt-8 p-6">
-              <MagicLinkForm />
+              {authErrorMessage ? (
+                <AlertBanner tone="error" className="mb-4">
+                  {authErrorMessage}
+                </AlertBanner>
+              ) : null}
+              <StudioLoginForm />
             </div>
 
             <p className="mt-6 text-center text-xs text-text-faint">
-              Studio staff?{" "}
-              <Link href="/login/studio" className="ws-focus-ring rounded text-text-secondary hover:text-text-primary">
-                Sign in at the studio login
+              Client looking for your project?{" "}
+              <Link href="/login" className="ws-focus-ring rounded text-text-secondary hover:text-text-primary">
+                Use client magic link sign-in
               </Link>
             </p>
 

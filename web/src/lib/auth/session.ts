@@ -34,7 +34,10 @@ export async function requireAppUser(): Promise<AppUser> {
 }
 
 export async function requireRole(roles: UserRole[]): Promise<AppUser> {
-  const user = await requireAppUser();
+  const user = await getAppUser();
+  if (!user) {
+    redirect(roles.includes("admin") ? "/login/studio" : "/login");
+  }
   if (!roles.includes(user.role)) redirect("/");
   return user;
 }

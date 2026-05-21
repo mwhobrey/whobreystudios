@@ -31,7 +31,7 @@ export default async function PortalProjectDetailPage({ params, searchParams }: 
   const { id } = await params;
   const { payment: paymentFlash } = await searchParams;
 
-  const viewer = { id: user.id, role: user.role };
+  const viewer = { id: user.id, role: user.role, email: user.email };
   const [project, messageRows, fileRows, settings] = await Promise.all([
     getProjectForViewer(id, viewer),
     listMessagesForProject(id, viewer),

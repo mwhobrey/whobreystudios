@@ -16,7 +16,7 @@ export async function approveQuoteAction(
   if (!projectId || !quoteId) return { error: "Missing data." };
 
   try {
-    await approveQuoteForClient(quoteId, user.id);
+    await approveQuoteForClient(quoteId, { id: user.id, email: user.email });
   } catch (e) {
     if (e instanceof QuoteStateError) return { error: e.message };
     throw e;
@@ -37,7 +37,7 @@ export async function declineQuoteAction(
   if (!projectId || !quoteId) return { error: "Missing data." };
 
   try {
-    await declineQuoteForClient(quoteId, user.id);
+    await declineQuoteForClient(quoteId, { id: user.id, email: user.email });
   } catch (e) {
     if (e instanceof QuoteStateError) return { error: e.message };
     throw e;

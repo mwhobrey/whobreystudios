@@ -6,7 +6,7 @@ import { createProjectBodySchema } from "@/lib/schemas/project";
 import { getPrisma } from "@/lib/prisma";
 import type { UserRole } from "@/generated/prisma/enums";
 import type { ProjectStatus } from "@/generated/prisma/enums";
-import { createNotificationsBestEffort, listAdminUserIds } from "@/lib/data/notifications";
+import { fanOutEventBestEffort, listAdminUserIds } from "@/lib/data/notifications";
 
 const clientUserSelect = {
   id: true,
@@ -67,7 +67,45 @@ function emptyToNull(value: FormDataEntryValue | null): string | null {
   return String(value);
 }
 
-export async function insertProject(clientUserId: string, data: CreateProjectBody) {
+/** Viewer identity for project read/write authorization. */
+export type ProjectViewer = {
+  id: string;
+  role: UserRole;
+  /** Required for client contactEmail matching on unlinked projects. */
+  email?: string;
+};
+
+/** Prisma filter: client owns the row or unlinked row matches their email. */
+export function clientProjectAccessWhere(viewer: {
+  id: string;
+  email: string;
+}): Prisma.ProjectWhereInput {
+  const email = viewer.email.trim();
+  return {
+    OR: [
+      { clientUserId: viewer.id },
+      {
+        clientUserId: null,
+        contactEmail: { equals: email, mode: "insensitive" },
+      },
+    ],
+  };
+}
+
+export async function linkProjectsByContactEmail(userId: string, email: string) {
+  const normalized = email.trim();
+  if (!normalized) return { count: 0 };
+  const result = await getPrisma().project.updateMany({
+    where: {
+      clientUserId: null,
+      contactEmail: { equals: normalized, mode: "insensitive" },
+    },
+    data: { clientUserId: userId },
+  });
+  return result;
+}
+
+export async function insertProject(clientUserId: string | null, data: CreateProjectBody) {
   let projectTypeLabel = data.projectType.trim();
   const serviceTypeId: string | null = data.serviceTypeId ?? null;
 
@@ -99,13 +137,17 @@ export async function insertProject(clientUserId: string, data: CreateProjectBod
   });
 
   const adminIds = await listAdminUserIds();
-  await createNotificationsBestEffort(adminIds, {
-    actorUserId: clientUserId,
-    projectId: created.id,
-    type: "project_created",
-    title: "New project request",
-    body: `${created.fullName} submitted ${created.projectType}.`,
-  });
+  await fanOutEventBestEffort(
+    adminIds,
+    {
+      actorUserId: clientUserId,
+      projectId: created.id,
+      type: "project_created",
+      title: "New project request",
+      body: `${created.fullName} submitted ${created.projectType}.`,
+    },
+    { forAdmin: true },
+  );
 
   return created;
 }
@@ -130,37 +172,45 @@ export async function listProjectsAdminPaginated(page: number, limit: number) {
   };
 }
 
-export async function listProjectsForClient(clientUserId: string, take = 50) {
+export async function listProjectsForClient(
+  viewer: { id: string; email: string },
+  take = 50,
+) {
   return getPrisma().project.findMany({
-    where: { clientUserId },
+    where: clientProjectAccessWhere(viewer),
     orderBy: { createdAt: "desc" },
     take,
     ...projectWithClient,
   });
 }
 
-export async function getProjectForViewer(
-  projectId: string,
-  viewer: { id: string; role: UserRole },
-) {
+export async function getProjectForViewer(projectId: string, viewer: ProjectViewer) {
   return getPrisma().project.findFirst({
     where: {
       id: projectId,
-      ...(viewer.role === "client" ? { clientUserId: viewer.id } : {}),
+      ...(viewer.role === "client" && viewer.email
+        ? clientProjectAccessWhere({ id: viewer.id, email: viewer.email })
+        : viewer.role === "client"
+          ? { clientUserId: viewer.id }
+          : {}),
     },
     ...projectDetailInclude,
   });
 }
 
-/** Whether this viewer may read or post on the project (admin: any; client: own only). */
+/** Whether this viewer may read or post on the project (admin: any; client: own or email match). */
 export async function userCanAccessProject(
   projectId: string,
-  viewer: { id: string; role: UserRole },
+  viewer: ProjectViewer,
 ): Promise<boolean> {
   const row = await getPrisma().project.findFirst({
     where: {
       id: projectId,
-      ...(viewer.role === "client" ? { clientUserId: viewer.id } : {}),
+      ...(viewer.role === "client" && viewer.email
+        ? clientProjectAccessWhere({ id: viewer.id, email: viewer.email })
+        : viewer.role === "client"
+          ? { clientUserId: viewer.id }
+          : {}),
     },
     select: { id: true },
   });
@@ -212,7 +262,13 @@ export async function transitionProjectStatus(input: {
 }) {
   const project = await getPrisma().project.findUnique({
     where: { id: input.projectId },
-    select: { id: true, status: true, clientUserId: true, projectType: true },
+    select: {
+      id: true,
+      status: true,
+      clientUserId: true,
+      projectType: true,
+      contactEmail: true,
+    },
   });
   if (!project) throw new ProjectTransitionError("not_found", "Project not found.");
   if (!canTransitionProjectStatus(project.status, input.to)) {
@@ -246,16 +302,24 @@ export async function transitionProjectStatus(input: {
     return tx.project.findUniqueOrThrow({ where: { id: project.id } });
   });
 
-  const recipients = await listAdminUserIds();
-  if (input.notifyClient && project.clientUserId) recipients.push(project.clientUserId);
-  await createNotificationsBestEffort(recipients, {
+  const adminIds = await listAdminUserIds();
+  const event = {
     actorUserId: input.actorUserId ?? null,
     projectId: project.id,
-    type: "project_status_changed",
+    type: "project_status_changed" as const,
     title: input.title ?? "Project status updated",
     body: input.body ?? `${project.projectType}: ${project.status} -> ${input.to}`,
     payload: { from: project.status, to: input.to, reason: input.reason ?? null },
-  });
+  };
+
+  await fanOutEventBestEffort(adminIds, event, { forAdmin: true });
+
+  if (input.notifyClient) {
+    const clientRecipients = project.clientUserId ? [project.clientUserId] : [];
+    const extraEmails =
+      !project.clientUserId && project.contactEmail ? [project.contactEmail] : undefined;
+    await fanOutEventBestEffort(clientRecipients, event, { extraEmails });
+  }
 
   return updated;
 }

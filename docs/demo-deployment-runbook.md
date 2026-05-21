@@ -149,12 +149,20 @@ Notes:
 2. Add and verify sending domain **`whobrey-studios.llc`** (SPF/DKIM records at your DNS host).
 3. Set `EMAIL_FROM` e.g. `Whobrey Studios <portal@whobrey-studios.llc>`.
 4. **Outbox worker (WHO-22):** set `CRON_SECRET` and schedule Vercel Cron:
-   - Path: `POST /api/cron/email-outbox`
-   - Header: `Authorization: Bearer <CRON_SECRET>`
+   - Path: `/api/cron/email-outbox` (Vercel Cron issues **GET**; manual curl may use **POST**)
+   - Header: `Authorization: Bearer <CRON_SECRET>` (Vercel injects this automatically when `CRON_SECRET` is set)
+   - Optional query: `?batchSize=20` (max 100)
    - Suggested schedule: every 5 minutes (`*/5 * * * *`).
+   - Local drain without deploy: `cd web && npm run verify:email-outbox` (needs `DATABASE_URL`; Resend keys optional — rows stay pending if unset).
 5. Dev without domain verify: Resend onboarding domain works for test sends only.
 
-**E2E smoke (WHO-7):** guest intake → magic link email → admin sends quote → client receives quote email → cron drains outbox.
+**E2E smoke (WHO-7):**
+
+1. Guest submit at `/request` → admin email (new request) via cron drain.
+2. Client magic link at `/login` → project links to account.
+3. Admin sends quote → `contactEmail` receives quote email (even before link).
+4. `npm run verify:email-outbox` or hit cron route to drain queue.
+5. Stripe deposit → client + admin payment emails.
 
 ### 3.4 Cloudflare R2
 1. Create bucket (private): `whobrey-demo-files` (or your chosen name).

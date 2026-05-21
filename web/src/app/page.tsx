@@ -99,8 +99,17 @@ export default async function Home() {
               ) : null}
               {!user ? (
                 <>
+                  <Link href="/request">
+                    <AppButton
+                      size="lg"
+                      roleVariant="portal"
+                      iconRight={<ArrowRight className="h-4 w-4" />}
+                    >
+                      Start a project
+                    </AppButton>
+                  </Link>
                   <Link href="/login">
-                    <AppButton size="lg" iconRight={<ArrowRight className="h-4 w-4" />}>
+                    <AppButton size="lg" variant="secondary">
                       Sign in
                     </AppButton>
                   </Link>
@@ -171,8 +180,13 @@ export default async function Home() {
                   Submit your project, review your proof, and receive final files in one place.
                 </h2>
               </div>
-              <Link href="/login">
-                <AppButton iconRight={<ArrowRight className="h-4 w-4" />}>Sign in</AppButton>
+              <Link href="/request">
+                <AppButton
+                  roleVariant="portal"
+                  iconRight={<ArrowRight className="h-4 w-4" />}
+                >
+                  Start a project
+                </AppButton>
               </Link>
             </div>
           </div>

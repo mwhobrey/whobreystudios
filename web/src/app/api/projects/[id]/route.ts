@@ -14,7 +14,11 @@ export async function GET(_request: Request, context: RouteContext) {
 
   const { id } = await context.params;
 
-  const project = await getProjectForViewer(id, { id: appUser.id, role: appUser.role });
+  const project = await getProjectForViewer(id, {
+    id: appUser.id,
+    role: appUser.role,
+    email: appUser.email,
+  });
 
   if (!project) {
     return NextResponse.json({ error: "Project not found" }, { status: 404 });

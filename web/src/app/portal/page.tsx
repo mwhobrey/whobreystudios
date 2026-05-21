@@ -20,7 +20,7 @@ const ATTENTION_STATUSES = new Set([
 
 export default async function PortalHome() {
   const user = await requireAppUser();
-  const projects = await listProjectsForClient(user.id);
+  const projects = await listProjectsForClient({ id: user.id, email: user.email });
   const unreadByProject = await getUnreadNotificationCountsByProject(
     user.id,
     projects.map((p) => p.id),

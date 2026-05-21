@@ -1,7 +1,7 @@
 import "server-only";
 
 import type Stripe from "stripe";
-import { createNotificationsBestEffort, listAdminUserIds } from "@/lib/data/notifications";
+import { fanOutEventBestEffort, listAdminUserIds } from "@/lib/data/notifications";
 import {
   findPaymentByStripeSessionId,
   markPaymentCancelled,
@@ -94,12 +94,25 @@ async function handleCheckoutSessionCompleted(
   }
 
   const adminIds = await listAdminUserIds();
-  await createNotificationsBestEffort(adminIds, {
+  const paymentEvent = {
     actorUserId: null,
     projectId: project.id,
-    type: "project_status_changed",
+    type: "project_status_changed" as const,
     title: paidRecord.type === "deposit" ? "Deposit paid" : "Final payment paid",
     body: `Stripe confirmed ${paidRecord.type} payment for ${project.projectType}.`,
+  };
+
+  await fanOutEventBestEffort(adminIds, paymentEvent, {
+    forAdmin: true,
+    paymentType: paidRecord.type,
+  });
+
+  const clientRecipients = project.clientUserId ? [project.clientUserId] : [];
+  const extraEmails =
+    !project.clientUserId && project.contactEmail ? [project.contactEmail] : undefined;
+  await fanOutEventBestEffort(clientRecipients, paymentEvent, {
+    extraEmails,
+    paymentType: paidRecord.type,
   });
 }
 

@@ -1,6 +1,10 @@
 import "server-only";
 
 import type { NotificationType, UserRole } from "@/generated/prisma/enums";
+import {
+  enqueueEmailsForEventBestEffort,
+  type EmailFanOutOptions,
+} from "@/lib/email/fanout";
 import { getPrisma } from "@/lib/prisma";
 
 type EventInput = {
@@ -75,6 +79,16 @@ export async function createNotificationsBestEffort(recipientUserIds: string[], 
   }
 }
 
+/** In-app bell + transactional email outbox (WHO-23). */
+export async function fanOutEventBestEffort(
+  recipientUserIds: string[],
+  event: EventInput,
+  emailOptions?: EmailFanOutOptions,
+) {
+  await createNotificationsBestEffort(recipientUserIds, event);
+  await enqueueEmailsForEventBestEffort(recipientUserIds, event, emailOptions);
+}
+
 export async function listRecentNotificationsForUser(userId: string, take = 20) {
   return getPrisma().notification.findMany({
     where: { recipientUserId: userId },
@@ -120,7 +134,7 @@ export async function listAdminUserIds(): Promise<string[]> {
 export async function getProjectAudience(projectId: string) {
   const project = await getPrisma().project.findUnique({
     where: { id: projectId },
-    select: { id: true, clientUserId: true },
+    select: { id: true, clientUserId: true, contactEmail: true },
   });
   if (!project) return null;
 
@@ -128,6 +142,7 @@ export async function getProjectAudience(projectId: string) {
   return {
     projectId: project.id,
     clientUserId: project.clientUserId,
+    contactEmail: project.contactEmail,
     adminUserIds: adminIds,
   };
 }

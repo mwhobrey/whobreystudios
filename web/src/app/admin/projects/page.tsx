@@ -120,7 +120,10 @@ export default async function AdminProjectsPage({ searchParams }: PageProps) {
                         ) : null}
                       </div>
                       <p className="mt-0.5 truncate text-xs text-text-muted">
-                        {p.clientUser?.name ?? p.clientUser?.email ?? "—"}
+                        {p.clientUser?.name ??
+                          p.clientUser?.email ??
+                          p.contactEmail ??
+                          "Guest request"}
                       </p>
                     </div>
 

@@ -83,7 +83,7 @@ export async function POST(request: Request, context: RouteContext) {
   try {
     const row = await createProjectFileUpload({
       projectId,
-      viewer: { id: appUser.id, role: appUser.role },
+      viewer: { id: appUser.id, role: appUser.role, email: appUser.email },
       originalName: file.name || "upload",
       mimeType: file.type || "application/octet-stream",
       kind: kindParsed.data,
