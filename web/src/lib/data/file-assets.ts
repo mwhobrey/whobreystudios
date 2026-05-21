@@ -197,3 +197,35 @@ export async function createProjectFileUpload(input: {
 
   return row;
 }
+
+/** Admin: promote a revision draft to a final deliverable (same bytes, new kind/source). */
+export async function promoteFileToFinal(input: {
+  projectId: string;
+  fileId: string;
+  viewer: { id: string; role: UserRole };
+}) {
+  if (input.viewer.role !== "admin") {
+    throw new FileUploadError("Only admins can promote files.", "forbidden");
+  }
+
+  const asset = await getPrisma().fileAsset.findFirst({
+    where: { id: input.fileId, projectId: input.projectId },
+  });
+  if (!asset) throw new FileUploadError("File not found.", "invalid");
+  if (asset.kind === "final") {
+    throw new FileUploadError("File is already marked as final.", "invalid");
+  }
+  if (asset.source === "intake") {
+    throw new FileUploadError("Intake reference files cannot be promoted to final.", "policy");
+  }
+
+  return getPrisma().fileAsset.update({
+    where: { id: asset.id },
+    data: {
+      kind: "final",
+      source: "delivery",
+      revisionNumber: Math.max(1, asset.revisionNumber),
+    },
+    include: fileAssetListInclude,
+  });
+}

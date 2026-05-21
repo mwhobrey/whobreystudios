@@ -15,4 +15,10 @@ export const quoteLinesPayloadSchema = z
 /** Draft saves may clear all lines; send still requires at least one valid line. */
 export const quoteLinesDraftSchema = z.array(quoteLineInputSchema).max(50);
 
+export const depositPercentSchema = z.coerce
+  .number()
+  .int()
+  .min(1, "Deposit must be at least 1%")
+  .max(99, "Deposit cannot exceed 99%");
+
 export type QuoteLineInput = z.infer<typeof quoteLineInputSchema>;

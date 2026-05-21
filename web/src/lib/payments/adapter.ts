@@ -1,5 +1,8 @@
 import "server-only";
 
+import { isStripeConfigured } from "@/lib/payments/stripe-client";
+import { StripePaymentAdapter } from "@/lib/payments/stripe-adapter";
+
 export type PaymentAccessCheckInput = {
   projectId: string;
   userId: string;
@@ -22,7 +25,7 @@ export type PaymentAdapter = {
   ensureInvoiceIntent(input: PaymentInvoiceIntent): Promise<{ providerRef: string | null }>;
 };
 
-class NoopPaymentAdapter implements PaymentAdapter {
+export class NoopPaymentAdapter implements PaymentAdapter {
   async hasClearedFinalPayment(input: PaymentAccessCheckInput): Promise<boolean> {
     void input;
     return false;
@@ -39,4 +42,6 @@ class NoopPaymentAdapter implements PaymentAdapter {
   }
 }
 
-export const paymentAdapter: PaymentAdapter = new NoopPaymentAdapter();
+export const paymentAdapter: PaymentAdapter = isStripeConfigured()
+  ? new StripePaymentAdapter()
+  : new NoopPaymentAdapter();

@@ -46,6 +46,17 @@ export default async function PolicySettingsPage() {
           />
         </FormField>
 
+        <FormField label="Default deposit %" hint="Applied to new quote drafts">
+          <input
+            type="number"
+            min={1}
+            max={99}
+            name="defaultDepositPercent"
+            defaultValue={settings.defaultDepositPercent}
+            className="ws-input w-28 tabular-nums"
+          />
+        </FormField>
+
         <label className="flex items-start gap-3 rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-raised)]/60 p-3 text-sm">
           <input
             type="checkbox"

@@ -111,6 +111,9 @@ Set these in Vercel Project Settings -> Environment Variables (Production):
 | `SEED_CLIENT_EMAILS` | optional | `client1@…,client2@…` | Comma-separated list (preferred for multiple demo clients) |
 | `SEED_CLIENT_EMAIL` | optional | `client@whobrey.local` | Single client (legacy; ignored if `SEED_CLIENT_EMAILS` is set) |
 | `SEED_CLIENT_PASSWORD` | optional | `strong-demo-password` | Shared password for all seeded clients |
+| `STRIPE_SECRET_KEY` | yes (payments) | `sk_test_...` | Stripe Dashboard → Developers → API keys (test mode) |
+| `STRIPE_WEBHOOK_SECRET` | yes (payments) | `whsec_...` | Stripe CLI (`stripe listen`) or Dashboard webhook signing secret |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | optional | `pk_test_...` | Same API keys page; hosted Checkout works without it in v1 |
 
 Notes:
 - `STORAGE_PROVIDER` defaults to local mode in development if not set.
@@ -124,7 +127,23 @@ Notes:
 2. Copy the pooled connection string.
 3. Put it in Vercel as `DATABASE_URL`.
 
-### 3.2 Cloudflare R2
+### 3.2 Stripe (sandbox / demo payments)
+
+1. Accept developer access on the Whobrey Studios Stripe account (test mode ON).
+2. Copy test keys into Vercel (and local `web/.env`):
+   - `STRIPE_SECRET_KEY` = `sk_test_...`
+   - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` = `pk_test_...` (optional)
+3. **Webhooks**
+   - **Local:** `stripe listen --forward-to localhost:3000/api/webhooks/stripe` → use printed `whsec_...` as `STRIPE_WEBHOOK_SECRET`.
+   - **Production:** Dashboard → Developers → Webhooks → Add endpoint:
+     - URL: `https://<AUTH_URL-host>/api/webhooks/stripe`
+     - Events: `checkout.session.completed`, `checkout.session.expired`
+     - Signing secret → `STRIPE_WEBHOOK_SECRET` in Vercel.
+4. Ensure `AUTH_URL` matches the public app URL (Checkout return URLs depend on it).
+
+**E2E smoke (WHO-31):** approve quote → pay deposit (card `4242424242424242`) → admin advances project → pay final → download final file.
+
+### 3.3 Cloudflare R2
 1. Create bucket (private): `whobrey-demo-files` (or your chosen name).
 2. Create an R2 API token with object read/write permissions for that bucket.
 3. Copy:

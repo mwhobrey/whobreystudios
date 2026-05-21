@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Bell,
   BellRing,
@@ -54,7 +55,9 @@ export function NotificationBell({ variant }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<NotificationResponse>({ unreadCount: 0, items: [] });
-  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [panelPos, setPanelPos] = useState<{ top: number; right: number } | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
 
   async function load() {
     setLoading(true);
@@ -76,12 +79,33 @@ export function NotificationBell({ variant }: Props) {
     return () => clearTimeout(t);
   }, [router]);
 
-  // Click-outside close
+  useEffect(() => {
+    if (!open) return;
+    function positionPanel() {
+      const btn = buttonRef.current;
+      if (!btn) return;
+      const rect = btn.getBoundingClientRect();
+      setPanelPos({
+        top: rect.bottom + 8,
+        right: Math.max(8, window.innerWidth - rect.right),
+      });
+    }
+    positionPanel();
+    window.addEventListener("resize", positionPanel);
+    window.addEventListener("scroll", positionPanel, true);
+    return () => {
+      window.removeEventListener("resize", positionPanel);
+      window.removeEventListener("scroll", positionPanel, true);
+    };
+  }, [open]);
+
   useEffect(() => {
     if (!open) return;
     function onDocClick(e: MouseEvent) {
-      if (!containerRef.current) return;
-      if (!containerRef.current.contains(e.target as Node)) setOpen(false);
+      const target = e.target as Node;
+      if (buttonRef.current?.contains(target)) return;
+      if (panelRef.current?.contains(target)) return;
+      setOpen(false);
     }
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") setOpen(false);
@@ -140,19 +164,115 @@ export function NotificationBell({ variant }: Props) {
 
   const grouped = useMemo(() => groupByDay(data.items), [data.items]);
 
+  const panel =
+    open && panelPos ? (
+      <div
+        ref={panelRef}
+        style={{ top: panelPos.top, right: panelPos.right }}
+        className={cx(
+          "ws-pop-in ws-glass fixed z-[100] w-[min(24rem,calc(100vw-1rem))] origin-top-right p-3 shadow-xl",
+          theme.ring,
+        )}
+        role="dialog"
+        aria-label="Notifications"
+      >
+        <header className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-text-primary">Notifications</h3>
+          <button
+            type="button"
+            onClick={markAllRead}
+            disabled={busy || !hasUnread}
+            className="ws-focus-ring rounded-md px-2 py-1 text-xs font-medium text-text-muted transition hover:bg-[color:var(--surface-overlay)] hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {busy ? "Working" : "Mark all read"}
+          </button>
+        </header>
+
+        {error ? (
+          <p className="mt-2 rounded-lg border border-[color:var(--status-danger-ring)]/60 bg-[color:var(--status-danger-bg)] px-2.5 py-1.5 text-xs text-[color:var(--status-danger-fg)]">
+            {error}
+          </p>
+        ) : null}
+
+        <div className="mt-3 max-h-[min(26rem,70vh)] overflow-y-auto pr-1">
+          {loading ? (
+            <p className="py-6 text-center text-sm text-text-muted">Loading…</p>
+          ) : data.items.length === 0 ? (
+            <p className="py-6 text-center text-sm text-text-muted">No notifications yet.</p>
+          ) : (
+            <ul className="space-y-3">
+              {grouped.map(({ label, items }) => (
+                <li key={label}>
+                  <p className="ws-eyebrow mb-1.5 px-1">{label}</p>
+                  <ul className="space-y-1.5">
+                    {items.map((n) => {
+                      const Icon = typeIcon[n.type] ?? Sparkles;
+                      return (
+                        <li key={n.id}>
+                          <button
+                            type="button"
+                            onClick={() => openItem(n)}
+                            className={cx(
+                              "ws-focus-ring flex w-full items-start gap-2 rounded-lg border px-2.5 py-2 text-left transition",
+                              "hover:bg-[color:var(--surface-overlay)]",
+                              n.readAt
+                                ? "border-[color:var(--border-subtle)] bg-[color:var(--surface-raised)]/40 text-text-muted"
+                                : "border-[color:var(--border-default)] bg-[color:var(--surface-raised)] text-text-primary",
+                            )}
+                          >
+                            <span
+                              className={cx(
+                                "mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md border",
+                                n.readAt
+                                  ? "border-[color:var(--border-subtle)] bg-[color:var(--surface-sunken)] text-text-muted"
+                                  : "border-[color:var(--brand-primary)]/40 bg-[color:var(--brand-primary)]/10 text-[color:var(--brand-primary)]",
+                              )}
+                            >
+                              <Icon className="h-3.5 w-3.5" />
+                            </span>
+                            <span className="min-w-0 flex-1">
+                              <span className="block truncate text-sm font-medium">{n.title}</span>
+                              {n.body ? (
+                                <span className="mt-0.5 block truncate text-xs text-text-muted">
+                                  {n.body}
+                                </span>
+                              ) : null}
+                              <span className="ws-mono mt-1 block text-[10px] uppercase tracking-wider text-text-faint">
+                                {new Date(n.createdAt).toLocaleString(undefined, {
+                                  dateStyle: "short",
+                                  timeStyle: "short",
+                                })}
+                              </span>
+                            </span>
+                            {!n.readAt ? (
+                              <span
+                                aria-hidden="true"
+                                className="mt-1.5 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-[color:var(--brand-primary)]"
+                              />
+                            ) : null}
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    ) : null;
+
   return (
-    <div ref={containerRef} className="relative">
+    <>
       <button
+        ref={buttonRef}
         type="button"
         onClick={() => setOpen((v) => !v)}
-        aria-label={
-          hasUnread
-            ? `Notifications, ${data.unreadCount} unread`
-            : "Notifications"
-        }
+        aria-label={hasUnread ? `Notifications, ${data.unreadCount} unread` : "Notifications"}
         aria-expanded={open}
         className={cx(
-          "ws-focus-ring relative inline-flex h-9 w-9 items-center justify-center rounded-xl border transition",
+          "ws-focus-ring relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border transition",
           "border-[color:var(--border-default)] bg-[color:var(--surface-raised)]",
           hasUnread ? "text-text-primary" : "text-text-muted hover:text-text-primary",
         )}
@@ -169,105 +289,8 @@ export function NotificationBell({ variant }: Props) {
           </span>
         ) : null}
       </button>
-
-      {open ? (
-        <div
-          className={cx(
-            "ws-pop-in ws-glass absolute right-0 z-30 mt-2 w-[24rem] origin-top-right p-3",
-            theme.ring,
-          )}
-          role="dialog"
-          aria-label="Notifications"
-        >
-          <header className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-text-primary">Notifications</h3>
-            <button
-              type="button"
-              onClick={markAllRead}
-              disabled={busy || !hasUnread}
-              className="ws-focus-ring rounded-md px-2 py-1 text-xs font-medium text-text-muted transition hover:bg-[color:var(--surface-overlay)] hover:text-text-primary disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              {busy ? "Working" : "Mark all read"}
-            </button>
-          </header>
-
-          {error ? (
-            <p className="mt-2 rounded-lg border border-[color:var(--status-danger-ring)]/60 bg-[color:var(--status-danger-bg)] px-2.5 py-1.5 text-xs text-[color:var(--status-danger-fg)]">
-              {error}
-            </p>
-          ) : null}
-
-          <div className="mt-3 max-h-[26rem] overflow-y-auto pr-1">
-            {loading ? (
-              <p className="py-6 text-center text-sm text-text-muted">Loading…</p>
-            ) : data.items.length === 0 ? (
-              <p className="py-6 text-center text-sm text-text-muted">No notifications yet.</p>
-            ) : (
-              <ul className="space-y-3">
-                {grouped.map(({ label, items }) => (
-                  <li key={label}>
-                    <p className="ws-eyebrow mb-1.5 px-1">{label}</p>
-                    <ul className="space-y-1.5">
-                      {items.map((n) => {
-                        const Icon = typeIcon[n.type] ?? Sparkles;
-                        return (
-                          <li key={n.id}>
-                            <button
-                              type="button"
-                              onClick={() => openItem(n)}
-                              className={cx(
-                                "ws-focus-ring flex w-full items-start gap-2 rounded-lg border px-2.5 py-2 text-left transition",
-                                "hover:bg-[color:var(--surface-overlay)]",
-                                n.readAt
-                                  ? "border-[color:var(--border-subtle)] bg-[color:var(--surface-raised)]/40 text-text-muted"
-                                  : "border-[color:var(--border-default)] bg-[color:var(--surface-raised)] text-text-primary",
-                              )}
-                            >
-                              <span
-                                className={cx(
-                                  "mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md border",
-                                  n.readAt
-                                    ? "border-[color:var(--border-subtle)] bg-[color:var(--surface-sunken)] text-text-muted"
-                                    : "border-[color:var(--brand-primary)]/40 bg-[color:var(--brand-primary)]/10 text-[color:var(--brand-primary)]",
-                                )}
-                              >
-                                <Icon className="h-3.5 w-3.5" />
-                              </span>
-                              <span className="min-w-0 flex-1">
-                                <span className="block truncate text-sm font-medium">
-                                  {n.title}
-                                </span>
-                                {n.body ? (
-                                  <span className="mt-0.5 block truncate text-xs text-text-muted">
-                                    {n.body}
-                                  </span>
-                                ) : null}
-                                <span className="ws-mono mt-1 block text-[10px] uppercase tracking-wider text-text-faint">
-                                  {new Date(n.createdAt).toLocaleString(undefined, {
-                                    dateStyle: "short",
-                                    timeStyle: "short",
-                                  })}
-                                </span>
-                              </span>
-                              {!n.readAt ? (
-                                <span
-                                  aria-hidden="true"
-                                  className="mt-1.5 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-[color:var(--brand-primary)]"
-                                />
-                              ) : null}
-                            </button>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </div>
-      ) : null}
-    </div>
+      {typeof document !== "undefined" && panel ? createPortal(panel, document.body) : null}
+    </>
   );
 }
 

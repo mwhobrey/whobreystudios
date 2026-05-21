@@ -14,10 +14,22 @@ type Props = {
   quoteId: string;
   version: number;
   totalCents: number;
+  depositPercent: number;
+  depositCents: number;
+  balanceCents: number;
   lines: Line[];
 };
 
-export function SentQuotePanel({ projectId, quoteId, version, totalCents, lines }: Props) {
+export function SentQuotePanel({
+  projectId,
+  quoteId,
+  version,
+  totalCents,
+  depositPercent,
+  depositCents,
+  balanceCents,
+  lines,
+}: Props) {
   const [approveState, approveAct, approvePending] = useActionState(approveQuoteAction, {} as ClientQuoteActionState);
   const [declineState, declineAct, declinePending] = useActionState(declineQuoteAction, {} as ClientQuoteActionState);
 
@@ -53,6 +65,21 @@ export function SentQuotePanel({ projectId, quoteId, version, totalCents, lines 
             </li>
           ))}
         </ul>
+
+        <div className="mt-4 flex flex-wrap gap-4 text-sm">
+          <div>
+            <span className="ws-eyebrow">Deposit ({depositPercent}%)</span>
+            <p className="ws-mono mt-1 tabular-nums text-text-primary">
+              {formatUsd(depositCents)}
+            </p>
+          </div>
+          <div>
+            <span className="ws-eyebrow">Balance due</span>
+            <p className="ws-mono mt-1 tabular-nums text-text-primary">
+              {formatUsd(balanceCents)}
+            </p>
+          </div>
+        </div>
 
         {err ? (
           <div className="mt-4">

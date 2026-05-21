@@ -16,11 +16,18 @@ export async function savePolicySettingsAction(formData: FormData) {
     10,
   );
   const finalFilesRequirePayment = String(formData.get("finalFilesRequirePayment") ?? "") === "on";
+  const defaultDepositPercent = Number.parseInt(
+    String(formData.get("defaultDepositPercent") ?? "40"),
+    10,
+  );
 
   await updateWorkspacePolicy({
     includedRevisionsDefault: Number.isNaN(includedRevisionsDefault)
       ? 2
       : Math.min(20, Math.max(1, includedRevisionsDefault)),
+    defaultDepositPercent: Number.isNaN(defaultDepositPercent)
+      ? 40
+      : Math.min(99, Math.max(1, defaultDepositPercent)),
     finalFilesRequirePayment,
     termsUrl: cleanUrl(formData.get("termsUrl")),
     privacyUrl: cleanUrl(formData.get("privacyUrl")),

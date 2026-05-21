@@ -14,6 +14,10 @@ import { ProjectSummaryCards } from "@/components/project-summary-cards";
 import { StatusTimeline, type TimelineEntry } from "@/components/ui/status-timeline";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { formatEnumLabel } from "@/lib/format";
+import { getWorkspaceSettings } from "@/lib/data/workspace-settings";
+import { listNextProjectStatuses } from "@/lib/data/projects";
+import { ProjectSectionNav } from "@/components/project-section-nav";
+import { ProjectStatusControls } from "./project-status-controls";
 
 type PageProps = { params: Promise<{ id: string }> };
 
@@ -22,14 +26,17 @@ export default async function AdminProjectDetailPage({ params }: PageProps) {
   const { id } = await params;
 
   const viewer = { id: user.id, role: user.role };
-  const [project, messageRows, fileRows, transitions] = await Promise.all([
+  const [project, messageRows, fileRows, transitions, workspaceSettings] = await Promise.all([
     getProjectForViewer(id, viewer),
     listMessagesForProject(id, viewer),
     listFileAssetsForProject(id, viewer),
     listProjectStatusTransitions(id),
+    getWorkspaceSettings(),
   ]);
   if (!project) notFound();
   const revisionUsage = await getProjectRevisionUsage(id, project.quotes[0]?.includedRevisions);
+
+  const nextStatuses = listNextProjectStatuses(project.status);
 
   const timelineEntries: TimelineEntry[] = transitions.map((t) => ({
     id: t.id,
@@ -73,10 +80,13 @@ export default async function AdminProjectDetailPage({ params }: PageProps) {
         <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
           <ProjectSummaryCards project={project} showClient={true} />
 
-          <section
-            id="status-timeline"
-            className="ws-panel p-5"
-          >
+          <ProjectStatusControls
+            projectId={project.id}
+            currentStatus={project.status}
+            nextStatuses={nextStatuses}
+          />
+
+          <section id="status-timeline" className="ws-panel p-5">
             <header className="flex items-center gap-2">
               <History className="h-4 w-4 text-text-muted" />
               <h2 className="text-sm font-semibold text-text-primary">Status timeline</h2>
@@ -85,12 +95,17 @@ export default async function AdminProjectDetailPage({ params }: PageProps) {
               <StatusTimeline entries={timelineEntries} />
             </div>
           </section>
-
-          <SectionNav />
         </aside>
 
         {/* Right work area */}
         <div className="space-y-10">
+          <ProjectSectionNav
+            items={[
+              { href: "#quote", label: "Quote" },
+              { href: "#files", label: "Files" },
+              { href: "#messages", label: "Messages" },
+            ]}
+          />
           <SectionAnchor
             id="quote"
             icon={<FileSignature className="h-4 w-4" />}
@@ -101,11 +116,13 @@ export default async function AdminProjectDetailPage({ params }: PageProps) {
               projectId={project.id}
               projectStatus={project.status}
               revisionUsage={revisionUsage}
+              defaultDepositPercent={workspaceSettings.defaultDepositPercent}
               quotes={project.quotes.map((q) => ({
                 id: q.id,
                 version: q.version,
                 status: q.status,
                 includedRevisions: q.includedRevisions,
+                depositPercent: q.depositPercent,
                 totalCents: q.totalCents,
                 lineItems: q.lineItems.map((l) => ({
                   id: l.id,
@@ -142,32 +159,6 @@ export default async function AdminProjectDetailPage({ params }: PageProps) {
         </div>
       </div>
     </AppShell>
-  );
-}
-
-function SectionNav() {
-  const items = [
-    { href: "#quote", label: "Quote" },
-    { href: "#files", label: "Files" },
-    { href: "#messages", label: "Messages" },
-    { href: "#status-timeline", label: "Status timeline" },
-  ];
-  return (
-    <nav className="ws-panel hidden p-4 lg:block">
-      <p className="ws-eyebrow">Jump to</p>
-      <ul className="mt-3 space-y-1 text-sm">
-        {items.map((item) => (
-          <li key={item.href}>
-            <a
-              href={item.href}
-              className="ws-focus-ring block rounded-md px-2 py-1.5 text-text-muted transition hover:bg-[color:var(--surface-overlay)] hover:text-text-primary"
-            >
-              {item.label}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
   );
 }
 

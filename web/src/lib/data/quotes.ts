@@ -5,6 +5,7 @@ import { createNotificationsBestEffort, listAdminUserIds } from "@/lib/data/noti
 import { getPrisma } from "@/lib/prisma";
 import { getIncludedRevisionsDefault } from "@/lib/data/workspace-settings";
 import { quoteLinesPayloadSchema } from "@/lib/schemas/quote";
+import { findPaidDepositForProject } from "@/lib/data/payments";
 import {
   ProjectTransitionError,
   transitionProjectStatus,
@@ -126,6 +127,7 @@ export async function replaceQuoteLineItems(
   quoteId: string,
   lines: { description: string; quantity: number; unitAmountCents: number }[],
   includedRevisions?: number | null,
+  depositPercent?: number | null,
 ) {
   const quote = await getPrisma().quote.findUnique({ where: { id: quoteId } });
   if (!quote) throw new QuoteStateError("NOT_FOUND", "Quote not found.");
@@ -153,11 +155,68 @@ export async function replaceQuoteLineItems(
       data: {
         totalCents,
         ...(includedRevisions === undefined ? {} : { includedRevisions }),
+        ...(depositPercent === undefined ? {} : { depositPercent }),
       },
     });
     if (updated.count !== 1) {
       throw new QuoteStateError("CONFLICT", "Quote changed while editing. Refresh and retry.");
     }
+  });
+
+  return getPrisma().quote.findUniqueOrThrow({
+    where: { id: quoteId },
+    ...quoteWithLines,
+  });
+}
+
+/** Append line items to an approved quote (post-deposit add-ons, WHO-19). */
+export async function appendQuoteLineItemsForApprovedQuote(
+  quoteId: string,
+  lines: { description: string; quantity: number; unitAmountCents: number }[],
+) {
+  const quote = await getPrisma().quote.findUnique({
+    where: { id: quoteId },
+    include: { lineItems: true, project: true },
+  });
+  if (!quote) throw new QuoteStateError("NOT_FOUND", "Quote not found.");
+  if (quote.status !== "approved") {
+    throw new QuoteStateError("INVALID", "Only approved quotes can receive add-on line items.");
+  }
+  if (quote.project.status !== "in_progress" && quote.project.status !== "awaiting_final_payment") {
+    throw new QuoteStateError(
+      "INVALID",
+      "Add-ons are only allowed while work is in progress or awaiting final payment.",
+    );
+  }
+
+  const parsed = quoteLinesPayloadSchema.safeParse(lines);
+  if (!parsed.success) {
+    throw new QuoteStateError("VALIDATION", "Add at least one valid line item.");
+  }
+
+  const depositPaid = await findPaidDepositForProject(quote.projectId);
+  if (!depositPaid) {
+    throw new QuoteStateError("INVALID", "Deposit must be paid before adding invoice add-ons.");
+  }
+
+  const maxSort = quote.lineItems.reduce((m, l) => Math.max(m, l.sortOrder), -1);
+  const newLines = parsed.data;
+  const addedCents = sumLinesCents(newLines);
+
+  await getPrisma().$transaction(async (tx) => {
+    await tx.quoteLineItem.createMany({
+      data: newLines.map((l, i) => ({
+        quoteId,
+        description: l.description,
+        quantity: l.quantity,
+        unitAmountCents: l.unitAmountCents,
+        sortOrder: maxSort + 1 + i,
+      })),
+    });
+    await tx.quote.update({
+      where: { id: quoteId },
+      data: { totalCents: quote.totalCents + addedCents },
+    });
   });
 
   return getPrisma().quote.findUniqueOrThrow({
@@ -261,9 +320,10 @@ export async function approveQuoteForClient(quoteId: string, clientUserId: strin
     if (updated.count !== 1) {
       throw new QuoteStateError("INVALID", "Quote is no longer in sent state.");
     }
+    // Quote is approved; project waits for deposit before work starts.
     await transitionProjectStatus({
       projectId: quote.projectId,
-      to: "approved",
+      to: "awaiting_deposit",
       actorUserId: clientUserId,
       notifyClient: false,
     });

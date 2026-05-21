@@ -1,6 +1,8 @@
 import { AlertTriangle, FileSignature } from "lucide-react";
 import { formatEnumLabel, formatUsd } from "@/lib/format";
+import { computeQuotePaymentBreakdown } from "@/lib/payments/amounts";
 import { DeclineDecisionForm, QuoteBuilder, StartQuoteButton } from "./quote-builder";
+import { QuoteAddonForm } from "./quote-addon-form";
 import type { RevisionUsage } from "@/lib/data/revisions";
 import { AlertBanner } from "@/components/ui/alert-banner";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -11,6 +13,7 @@ type QuoteLite = {
   version: number;
   status: string;
   includedRevisions: number | null;
+  depositPercent: number | null;
   totalCents: number;
   lineItems: { id: string; description: string; quantity: number; unitAmountCents: number }[];
 };
@@ -20,10 +23,21 @@ type Props = {
   projectStatus: string;
   revisionUsage: RevisionUsage;
   quotes: QuoteLite[];
+  defaultDepositPercent: number;
 };
 
-export function AdminQuoteSection({ projectId, projectStatus, revisionUsage, quotes }: Props) {
+export async function AdminQuoteSection({
+  projectId,
+  projectStatus,
+  revisionUsage,
+  quotes,
+  defaultDepositPercent,
+}: Props) {
   const latest = quotes[0];
+  const paymentBreakdown =
+    latest && (latest.status === "sent" || latest.status === "approved")
+      ? await computeQuotePaymentBreakdown(latest)
+      : null;
 
   return (
     <div className="space-y-5">
@@ -71,6 +85,7 @@ export function AdminQuoteSection({ projectId, projectStatus, revisionUsage, quo
           projectId={projectId}
           quoteId={latest.id}
           initialIncludedRevisions={latest.includedRevisions ?? revisionUsage.included}
+          initialDepositPercent={latest.depositPercent ?? defaultDepositPercent}
           initialLines={latest.lineItems.map((l) => ({
             description: l.description,
             quantity: l.quantity,
@@ -79,16 +94,23 @@ export function AdminQuoteSection({ projectId, projectStatus, revisionUsage, quo
         />
       ) : null}
 
-      {latest?.status === "sent" ? (
-        <SentQuoteCard quote={latest} />
+      {latest?.status === "sent" && paymentBreakdown ? (
+        <SentQuoteCard quote={latest} breakdown={paymentBreakdown} />
       ) : null}
 
-      {latest?.status === "approved" ? (
-        <AlertBanner tone="success">
-          Quote v{latest.version} was{" "}
-          <strong className="font-semibold">approved</strong>. Total{" "}
-          <span className="ws-mono">{formatUsd(latest.totalCents)}</span>.
-        </AlertBanner>
+      {latest?.status === "approved" && paymentBreakdown ? (
+        <div className="space-y-4">
+          <AlertBanner tone="success">
+            Quote v{latest.version} was{" "}
+            <strong className="font-semibold">approved</strong>. Total{" "}
+            <span className="ws-mono">{formatUsd(latest.totalCents)}</span>
+            {" · "}Deposit {paymentBreakdown.depositPercent}% (
+            {formatUsd(paymentBreakdown.depositCents)})
+          </AlertBanner>
+          {(projectStatus === "in_progress" || projectStatus === "awaiting_final_payment") ? (
+            <QuoteAddonForm projectId={projectId} quoteId={latest.id} />
+          ) : null}
+        </div>
       ) : null}
 
       {latest?.status === "declined" ? (
@@ -104,7 +126,13 @@ export function AdminQuoteSection({ projectId, projectStatus, revisionUsage, quo
   );
 }
 
-function SentQuoteCard({ quote }: { quote: QuoteLite }) {
+function SentQuoteCard({
+  quote,
+  breakdown,
+}: {
+  quote: QuoteLite;
+  breakdown: { depositCents: number; balanceCents: number; depositPercent: number };
+}) {
   return (
     <div
       className={cx(
@@ -136,6 +164,12 @@ function SentQuoteCard({ quote }: { quote: QuoteLite }) {
           </li>
         ))}
       </ul>
+      <p className="mt-4 text-xs text-text-muted">
+        Deposit {breakdown.depositPercent}%:{" "}
+        <span className="ws-mono text-text-secondary">{formatUsd(breakdown.depositCents)}</span>
+        {" · "}Balance:{" "}
+        <span className="ws-mono text-text-secondary">{formatUsd(breakdown.balanceCents)}</span>
+      </p>
     </div>
   );
 }

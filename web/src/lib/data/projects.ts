@@ -179,9 +179,10 @@ export class ProjectTransitionError extends Error {
 
 const allowedTransitions: Record<ProjectStatus, ProjectStatus[]> = {
   new_request: ["quote_sent", "on_hold", "cancelled"],
-  quote_sent: ["approved", "declined", "on_hold", "cancelled"],
-  approved: ["in_progress", "awaiting_final_payment", "on_hold", "cancelled"],
-  in_progress: ["final_revision", "awaiting_final_payment", "on_hold", "cancelled"],
+  quote_sent: ["approved", "awaiting_deposit", "declined", "on_hold", "cancelled"],
+  approved: ["awaiting_deposit", "on_hold", "cancelled"],
+  awaiting_deposit: ["in_progress", "on_hold", "cancelled"],
+  in_progress: ["final_revision", "awaiting_final_payment", "completed", "on_hold", "cancelled"],
   final_revision: ["awaiting_final_payment", "in_progress", "on_hold", "cancelled"],
   awaiting_final_payment: ["completed", "on_hold", "cancelled"],
   completed: [],
@@ -193,6 +194,10 @@ const allowedTransitions: Record<ProjectStatus, ProjectStatus[]> = {
 export function canTransitionProjectStatus(from: ProjectStatus, to: ProjectStatus): boolean {
   if (from === to) return true;
   return allowedTransitions[from].includes(to);
+}
+
+export function listNextProjectStatuses(from: ProjectStatus): ProjectStatus[] {
+  return allowedTransitions[from] ?? [];
 }
 
 export async function transitionProjectStatus(input: {

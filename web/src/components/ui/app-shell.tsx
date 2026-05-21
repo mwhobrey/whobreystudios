@@ -58,8 +58,8 @@ export function AppShell({
   return (
     <>
       {chrome ? (
-        <header className="sticky top-0 z-40 border-b border-[color:var(--border-subtle)] bg-[color:var(--surface-overlay)]/85 backdrop-blur-[var(--blur-overlay)]">
-          <div className="mx-auto flex w-full max-w-[88rem] items-center justify-between gap-4 px-6 py-3">
+        <header className="sticky top-0 z-40 overflow-visible border-b border-[color:var(--border-subtle)] bg-[color:var(--surface-overlay)]/85 backdrop-blur-[var(--blur-overlay)]">
+          <div className="mx-auto flex h-14 w-full max-w-[88rem] items-center justify-between gap-4 px-6">
             <Link
               href={variant === "admin" ? "/admin" : "/portal"}
               className="ws-focus-ring rounded-md"

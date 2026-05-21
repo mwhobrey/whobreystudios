@@ -1,6 +1,7 @@
 import { Download, FileText } from "lucide-react";
 import type { FileAssetWithUploader } from "@/lib/data/file-assets";
 import { formatEnumLabel, formatFileSize } from "@/lib/format";
+import { ProjectFilePromoteButton } from "@/components/project-file-promote-button";
 import { ProjectFilesUpload } from "@/components/project-files-upload";
 import { EmptyState } from "@/components/ui/empty-state";
 import { cx, roleTheme } from "@/lib/ui";
@@ -86,16 +87,21 @@ export function ProjectFilesSection({ projectId, variant, assets }: Props) {
                     })}
                   </td>
                   <td className="py-2.5 pr-4 text-right">
-                    <a
-                      className={cx(
-                        "ws-focus-ring inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition hover:bg-[color:var(--surface-overlay)]",
-                        theme.tint,
-                      )}
-                      href={`/api/projects/${projectId}/files/${a.id}`}
-                    >
-                      <Download className="h-3 w-3" />
-                      Download
-                    </a>
+                    <div className="flex items-center justify-end gap-1.5">
+                      {variant === "admin" && a.kind === "draft" && a.source !== "intake" ? (
+                        <ProjectFilePromoteButton projectId={projectId} fileId={a.id} />
+                      ) : null}
+                      <a
+                        className={cx(
+                          "ws-focus-ring inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition hover:bg-[color:var(--surface-overlay)]",
+                          theme.tint,
+                        )}
+                        href={`/api/projects/${projectId}/files/${a.id}`}
+                      >
+                        <Download className="h-3 w-3" />
+                        Download
+                      </a>
+                    </div>
                   </td>
                 </tr>
               ))}

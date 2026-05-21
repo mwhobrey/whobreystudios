@@ -185,7 +185,7 @@ export function statusIconName(status: string): StatusIconName {
 export const PROJECT_PIPELINE: readonly string[] = [
   "new_request",
   "quote_sent",
-  "approved",
+  "awaiting_deposit",
   "in_progress",
   "final_revision",
   "awaiting_final_payment",

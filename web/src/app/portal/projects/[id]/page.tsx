@@ -9,7 +9,11 @@ import { listMessagesForProject } from "@/lib/data/messages";
 import { getProjectForViewer } from "@/lib/data/projects";
 import { getProjectRevisionUsage } from "@/lib/data/revisions";
 import { getWorkspaceSettings } from "@/lib/data/workspace-settings";
+import { getProjectPaymentState } from "@/lib/data/project-payment-state";
 import { formatEnumLabel, formatUsd, statusGuidanceCopy, statusNextAction } from "@/lib/format";
+import { computeQuotePaymentBreakdown } from "@/lib/payments/amounts";
+import { isStripeConfigured } from "@/lib/payments/stripe-client";
+import { PaymentPanel } from "./payment-panel";
 import { SentQuotePanel } from "./sent-quote-panel";
 import { AppShell } from "@/components/ui/app-shell";
 import { AlertBanner } from "@/components/ui/alert-banner";
@@ -17,11 +21,15 @@ import { ProjectSummaryCards } from "@/components/project-summary-cards";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { pipelinePosition } from "@/lib/ui";
 
-type PageProps = { params: Promise<{ id: string }> };
+type PageProps = {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ payment?: string }>;
+};
 
-export default async function PortalProjectDetailPage({ params }: PageProps) {
+export default async function PortalProjectDetailPage({ params, searchParams }: PageProps) {
   const user = await requireAppUser();
   const { id } = await params;
+  const { payment: paymentFlash } = await searchParams;
 
   const viewer = { id: user.id, role: user.role };
   const [project, messageRows, fileRows, settings] = await Promise.all([
@@ -38,8 +46,18 @@ export default async function PortalProjectDetailPage({ params }: PageProps) {
   const nextAction = statusNextAction(project.status);
   const pipeline = pipelinePosition(project.status);
 
+  const paymentState = await getProjectPaymentState(id);
+
   const finalFilesLocked =
-    settings.finalFilesRequirePayment && project.status === "awaiting_final_payment";
+    settings.finalFilesRequirePayment &&
+    !paymentState.finalPaid &&
+    project.status !== "completed";
+
+  const quoteBreakdown =
+    latestQuote && latestQuote.totalCents > 0
+      ? await computeQuotePaymentBreakdown(latestQuote)
+      : null;
+  const stripeReady = isStripeConfigured();
 
   return (
     <AppShell
@@ -66,6 +84,15 @@ export default async function PortalProjectDetailPage({ params }: PageProps) {
         <StatusBadge status={project.status}>{formatEnumLabel(project.status)}</StatusBadge>
       }
     >
+      {paymentFlash === "success" ? (
+        <AlertBanner tone="success">
+          Payment received — thank you. This page will update as soon as processing completes.
+        </AlertBanner>
+      ) : null}
+      {paymentFlash === "cancelled" ? (
+        <AlertBanner tone="warning">Checkout was cancelled. You can try again when ready.</AlertBanner>
+      ) : null}
+
       {/* Hero guidance card */}
       <div className="ws-fade-up ws-elevated relative overflow-hidden p-6">
         <div aria-hidden="true" className="ws-mesh-soft" />
@@ -171,7 +198,7 @@ export default async function PortalProjectDetailPage({ params }: PageProps) {
 
         {/* Right work area */}
         <div className="space-y-10">
-          {latestQuote?.status === "sent" ? (
+          {latestQuote?.status === "sent" && quoteBreakdown ? (
             <SectionAnchor
               id="quote"
               icon={<FileSignature className="h-4 w-4" />}
@@ -183,6 +210,9 @@ export default async function PortalProjectDetailPage({ params }: PageProps) {
                 quoteId={latestQuote.id}
                 version={latestQuote.version}
                 totalCents={latestQuote.totalCents}
+                depositPercent={quoteBreakdown.depositPercent}
+                depositCents={quoteBreakdown.depositCents}
+                balanceCents={quoteBreakdown.balanceCents}
                 lines={latestQuote.lineItems.map((l) => ({
                   id: l.id,
                   description: l.description,
@@ -193,22 +223,70 @@ export default async function PortalProjectDetailPage({ params }: PageProps) {
             </SectionAnchor>
           ) : null}
 
-          {latestQuote?.status === "approved" ? (
+          {stripeReady && paymentState.canPayDeposit ? (
+            <SectionAnchor
+              id="payment-deposit"
+              icon={<FileSignature className="h-4 w-4" />}
+              title="Deposit due"
+              subtitle="Pay the deposit to start your project"
+            >
+              <PaymentPanel
+                projectId={project.id}
+                paymentType="deposit"
+                amountCents={paymentState.depositCents}
+                label="Pay deposit"
+                description={`${paymentState.depositPercent}% of ${formatUsd(paymentState.totalCents)} to begin work.`}
+              />
+            </SectionAnchor>
+          ) : null}
+
+          {latestQuote?.status === "approved" && quoteBreakdown ? (
             <SectionAnchor
               id="quote"
               icon={<FileSignature className="h-4 w-4" />}
               title="Quote approved"
               subtitle={`v${latestQuote.version} · Total ${formatUsd(latestQuote.totalCents)}`}
             >
+              <div className="ws-panel space-y-3 p-4 text-sm text-text-muted">
+                <p>
+                  Deposit ({quoteBreakdown.depositPercent}%):{" "}
+                  <span className="ws-mono text-text-primary">
+                    {formatUsd(quoteBreakdown.depositCents)}
+                  </span>
+                </p>
+                <p>
+                  Balance after deposit:{" "}
+                  <span className="ws-mono text-text-primary">
+                    {formatUsd(quoteBreakdown.balanceCents)}
+                  </span>
+                </p>
+              </div>
               {settings.finalFilesRequirePayment ? (
                 <AlertBanner tone="info">
-                  Final downloadable files remain locked until payment is cleared.
+                  Final downloadable files remain locked until final payment clears.
                 </AlertBanner>
               ) : (
                 <AlertBanner tone="success">
                   Final downloadable files are available as soon as the studio delivers them.
                 </AlertBanner>
               )}
+            </SectionAnchor>
+          ) : null}
+
+          {stripeReady && paymentState.canPayBalance ? (
+            <SectionAnchor
+              id="payment-balance"
+              icon={<FileSignature className="h-4 w-4" />}
+              title="Balance due"
+              subtitle="Pay anytime during the project — no need to wait for final delivery"
+            >
+              <PaymentPanel
+                projectId={project.id}
+                paymentType="final"
+                amountCents={paymentState.balanceDueCents}
+                label="Pay balance"
+                description={`Current balance on quote v${latestQuote?.version ?? ""} (includes any add-ons).`}
+              />
             </SectionAnchor>
           ) : null}
 

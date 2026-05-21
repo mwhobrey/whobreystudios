@@ -18,12 +18,25 @@ enum ProjectStatus {
   new_request
   quote_sent
   approved
+  awaiting_deposit
   in_progress
   final_revision
   awaiting_final_payment
   completed
   declined
   on_hold
+  cancelled
+}
+
+enum PaymentType {
+  deposit
+  final
+}
+
+enum PaymentStatus {
+  pending
+  paid
+  failed
   cancelled
 }
 
@@ -81,6 +94,7 @@ model User {
 model WorkspaceSettings {
   id                       Int      @id @default(1)
   includedRevisionsDefault Int      @default(2)
+  defaultDepositPercent    Int      @default(40)
   finalFilesRequirePayment Boolean  @default(true)
   termsUrl                 String?
   privacyUrl               String?
@@ -164,6 +178,7 @@ model Project {
   fileAssets FileAsset[]
   notifications Notification[]
   statusTransitions ProjectStatusTransition[]
+  paymentRecords PaymentRecord[]
 
   @@index([status])
   @@index([contactEmail])
@@ -250,12 +265,15 @@ model Quote {
   status     QuoteStatus @default(draft)
   /** Optional per-quote override; when null use WorkspaceSettings.includedRevisionsDefault. */
   includedRevisions Int?
+  /** Optional per-quote override; when null use WorkspaceSettings.defaultDepositPercent. */
+  depositPercent    Int?
   totalCents Int         @default(0)
   sentAt     DateTime?
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
 
   lineItems QuoteLineItem[]
+  paymentRecords PaymentRecord[]
 
   @@unique([projectId, version])
   @@index([projectId])
@@ -271,5 +289,27 @@ model QuoteLineItem {
   unitAmountCents Int
   sortOrder       Int    @default(0)
 
+  @@index([quoteId])
+}
+
+/// Stripe Checkout + webhook-confirmed payment (deposit or final balance).
+model PaymentRecord {
+  id                    String        @id @default(cuid())
+  projectId             String
+  project               Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  quoteId               String?
+  quote                 Quote?        @relation(fields: [quoteId], references: [id], onDelete: SetNull)
+  type                  PaymentType
+  status                PaymentStatus @default(pending)
+  amountCents           Int
+  currency              String        @default("usd")
+  stripeSessionId       String?       @unique
+  stripePaymentIntentId String?       @unique
+  stripeEventId         String?       @unique
+  metadataJson          String?
+  createdAt             DateTime      @default(now())
+  paidAt                DateTime?
+
+  @@index([projectId, type, status])
   @@index([quoteId])
 }

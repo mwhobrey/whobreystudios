@@ -9,6 +9,7 @@ export async function getWorkspaceSettings() {
     create: {
       id: 1,
       includedRevisionsDefault: 2,
+      defaultDepositPercent: 40,
       finalFilesRequirePayment: true,
     },
   });
@@ -19,8 +20,14 @@ export async function getIncludedRevisionsDefault() {
   return row.includedRevisionsDefault;
 }
 
+export async function getDefaultDepositPercent() {
+  const row = await getWorkspaceSettings();
+  return row.defaultDepositPercent;
+}
+
 export async function updateWorkspacePolicy(input: {
   includedRevisionsDefault: number;
+  defaultDepositPercent?: number;
   finalFilesRequirePayment: boolean;
   termsUrl?: string | null;
   privacyUrl?: string | null;
