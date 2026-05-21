@@ -68,6 +68,12 @@ enum NotificationType {
   project_status_changed
 }
 
+enum EmailOutboxStatus {
+  pending
+  sent
+  failed
+}
+
 /// Application user. Auth.js fields + `role` / optional `passwordHash` (credentials only).
 model User {
   id            String    @id @default(cuid())
@@ -312,4 +318,21 @@ model PaymentRecord {
 
   @@index([projectId, type, status])
   @@index([quoteId])
+}
+
+/// Transactional email queue (WHO-22 worker drains via cron).
+model EmailOutbox {
+  id             String            @id @default(cuid())
+  toEmail        String
+  templateKey    String
+  payloadJson    String
+  status         EmailOutboxStatus @default(pending)
+  attempts       Int               @default(0)
+  lastError      String?
+  idempotencyKey String?           @unique
+  sentAt         DateTime?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@index([status, createdAt])
 }

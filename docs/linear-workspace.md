@@ -57,6 +57,7 @@ Sub-issues WHO-12–31 are nested under epics WHO-6, WHO-7, WHO-8, WHO-9 via `sa
 - Normalized decisions: `decisions.md` (sync via WHO-30)
 - Technical design: `DESIGN.md`
 - Proposal / phases: `docs/client-proposal-whobrey-studios.md`
+- WHO-7 plan: `docs/who-7-implementation-plan.md`
 
 ## MCP notes (mcp-utils)
 
