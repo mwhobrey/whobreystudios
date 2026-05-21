@@ -3,6 +3,7 @@
 import { AuthError } from "next-auth";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { signIn } from "@/auth";
+import { assertAuthRateLimit, getRequestIp } from "@/lib/auth/rate-limit";
 import { getPrisma } from "@/lib/prisma";
 
 export type StudioLoginActionState = { error?: string };
@@ -14,6 +15,14 @@ export async function studioLoginAction(
   const email = formData.get("email");
   const password = formData.get("password");
   const safeEmail = typeof email === "string" ? email.trim().toLowerCase() : "";
+
+  if (safeEmail) {
+    const ip = await getRequestIp();
+    const emailLimit = await assertAuthRateLimit("studio:email", safeEmail);
+    if (!emailLimit.ok) return { error: emailLimit.message };
+    const ipLimit = await assertAuthRateLimit("studio:ip", ip);
+    if (!ipLimit.ok) return { error: ipLimit.message };
+  }
 
   const existingUser = safeEmail
     ? await getPrisma().user.findUnique({

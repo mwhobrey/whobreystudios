@@ -32,6 +32,7 @@ export async function updateWorkspacePolicy(input: {
   termsUrl?: string | null;
   privacyUrl?: string | null;
   refundPolicyUrl?: string | null;
+  shopUrl?: string | null;
 }) {
   return getPrisma().workspaceSettings.upsert({
     where: { id: 1 },

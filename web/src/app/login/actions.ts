@@ -3,6 +3,7 @@
 import { AuthError } from "next-auth";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { signIn } from "@/auth";
+import { assertAuthRateLimit, getRequestIp } from "@/lib/auth/rate-limit";
 import { isEmailConfigured } from "@/lib/email/resend";
 import { getPrisma } from "@/lib/prisma";
 
@@ -23,6 +24,12 @@ export async function magicLinkAction(
   const email = formData.get("email");
   const safeEmail = typeof email === "string" ? email.trim().toLowerCase() : "";
   if (!safeEmail) return { error: "Enter a valid email address." };
+
+  const ip = await getRequestIp();
+  const emailLimit = await assertAuthRateLimit("magic:email", safeEmail);
+  if (!emailLimit.ok) return { error: emailLimit.message };
+  const ipLimit = await assertAuthRateLimit("magic:ip", ip);
+  if (!ipLimit.ok) return { error: ipLimit.message };
 
   const existing = await getPrisma().user.findUnique({
     where: { email: safeEmail },

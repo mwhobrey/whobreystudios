@@ -164,7 +164,11 @@ Notes:
 4. `npm run verify:email-outbox` or hit cron route to drain queue.
 5. Stripe deposit → client + admin payment emails.
 
-### 3.4 Cloudflare R2
+### 3.4 Auth rate limits (WHO-28)
+
+Magic-link and studio login attempts are counted in Postgres (`AuthRateLimit`). Defaults: 5 magic-link emails / 15 min per address; IP buckets are higher. No extra env vars required.
+
+### 3.5 Cloudflare R2
 1. Create bucket (private): `whobrey-demo-files` (or your chosen name).
 2. Create an R2 API token with object read/write permissions for that bucket.
 3. Copy:

@@ -5,6 +5,7 @@ import { Wordmark } from "@/components/brand/wordmark";
 import { NavLinks, type NavItem } from "@/components/ui/nav-links";
 import { NotificationBell } from "@/components/notification-bell";
 import { SignOutButton } from "@/components/sign-out-button";
+import { getWorkspaceSettings } from "@/lib/data/workspace-settings";
 
 type Props = {
   variant: RoleVariant;
@@ -39,7 +40,7 @@ const portalNav: NavItem[] = [
   { label: "Start project", href: "/portal/projects/new" },
 ];
 
-export function AppShell({
+export async function AppShell({
   variant,
   title,
   subtitle,
@@ -53,7 +54,16 @@ export function AppShell({
   children,
 }: Props) {
   const theme = roleTheme(variant);
-  const navItems = variant === "admin" ? adminNav : portalNav;
+  let navItems: NavItem[] = variant === "admin" ? adminNav : portalNav;
+  if (variant === "portal") {
+    const settings = await getWorkspaceSettings();
+    if (settings.shopUrl?.trim()) {
+      navItems = [
+        ...portalNav,
+        { label: "Shop", href: settings.shopUrl.trim(), external: true },
+      ];
+    }
+  }
 
   return (
     <>

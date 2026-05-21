@@ -105,7 +105,15 @@ model WorkspaceSettings {
   termsUrl                 String?
   privacyUrl               String?
   refundPolicyUrl          String?
+  shopUrl                  String?
   updatedAt                DateTime @updatedAt
+}
+
+/// Sliding-window counters for auth abuse prevention (WHO-28).
+model AuthRateLimit {
+  key       String   @id
+  count     Int      @default(0)
+  windowEnd DateTime
 }
 
 model Account {

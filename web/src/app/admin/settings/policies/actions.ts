@@ -32,8 +32,10 @@ export async function savePolicySettingsAction(formData: FormData) {
     termsUrl: cleanUrl(formData.get("termsUrl")),
     privacyUrl: cleanUrl(formData.get("privacyUrl")),
     refundPolicyUrl: cleanUrl(formData.get("refundPolicyUrl")),
+    shopUrl: cleanUrl(formData.get("shopUrl")),
   });
 
   revalidatePath("/admin/settings/policies");
   revalidatePath("/admin");
+  revalidatePath("/portal");
 }

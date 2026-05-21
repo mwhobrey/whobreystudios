@@ -16,7 +16,7 @@ export default async function PolicySettingsPage() {
       variant="admin"
       eyebrow="Admin · Settings"
       title="Policy settings"
-      subtitle="Default revision count, payment gate, and legal links shown in the client area."
+      subtitle="Defaults, legal links, and optional shop link shown in the client portal."
       backLink={
         <Link
           href="/admin"
@@ -74,7 +74,10 @@ export default async function PolicySettingsPage() {
           </span>
         </label>
 
-        <FormField label="Terms URL" hint="Optional">
+        <FormField
+          label="Terms URL"
+          hint="Use a stable public URL (not a sharing link that expires). Client provided Terms in decisions_complete."
+        >
           <input
             type="url"
             name="termsUrl"
@@ -98,6 +101,19 @@ export default async function PolicySettingsPage() {
             name="refundPolicyUrl"
             defaultValue={settings.refundPolicyUrl ?? ""}
             placeholder="https://"
+            className="ws-input"
+          />
+        </FormField>
+
+        <FormField
+          label="Shop URL"
+          hint="External shop on your main website — shows as Shop in the client portal nav."
+        >
+          <input
+            type="url"
+            name="shopUrl"
+            defaultValue={settings.shopUrl ?? ""}
+            placeholder="https://whobreystudios.com/shop"
             className="ws-input"
           />
         </FormField>

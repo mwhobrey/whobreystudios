@@ -1,0 +1,31 @@
+{
+  "name": "Whobrey Studios",
+  "short_name": "Whobrey",
+  "description": "Client portal for design projects, quotes, files, and payments.",
+  "start_url": "/portal",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#08080b",
+  "theme_color": "#c8f542",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/brand/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/brand/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

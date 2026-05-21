@@ -11,6 +11,10 @@ const checks = [
   "Stripe webhook (checkout.session.completed) moves deposit paid to in_progress and final to completed.",
   "Replay same Stripe event id: no duplicate PaymentRecord or status transition.",
   "Post-deposit add-on line items increase final balance without a second deposit session.",
+  "Magic link: 6th request within 15 min returns rate-limit message (WHO-28).",
+  "Portal Shop nav appears when shopUrl is set; opens external site in new tab.",
+  "PWA: manifest.webmanifest loads; install prompt on supported mobile browsers.",
+  "Legal links hidden when policy URLs blank; visible when set in admin Policies.",
 ];
 
 console.log("[verify:tranche] Manual regression checklist");

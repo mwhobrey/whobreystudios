@@ -30,8 +30,15 @@ export const metadata: Metadata = {
     "Whobrey Studios client portal for design and production work — digital assets, vinyl decal projects, quote approvals, revisions, secure file delivery, and messaging.",
   applicationName: "Whobrey Studios",
   authors: [{ name: "Whobrey Studios" }],
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "Whobrey Studios",
+    statusBarStyle: "black-translucent",
+  },
   icons: {
     icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/brand/icon-192.png", sizes: "192x192" }],
   },
   openGraph: {
     title: "Whobrey Studios",
