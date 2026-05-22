@@ -8,7 +8,7 @@
     "prebuild": "prisma generate",
     "dev": "next dev --webpack",
     "dev:turbo": "next dev --turbopack",
-    "build": "prisma migrate deploy && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "verify:tranche-checklist": "node scripts/tranche-regression-checklist.mjs",
@@ -21,6 +21,8 @@
     "sync:brand-assets": "node scripts/sync-brand-assets.mjs",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:baseline": "node scripts/baseline-prisma-migrations.mjs",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:seed": "prisma db seed"

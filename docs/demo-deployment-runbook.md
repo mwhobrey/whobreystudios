@@ -206,27 +206,43 @@ Magic-link and studio login attempts are counted in Postgres (`AuthRateLimit`). 
 
 ## 5) Database Setup (Migrate + Seed)
 
-**Production schema:** Vercel `npm run build` runs `prisma migrate deploy` when `DATABASE_URL` is set on the project (required for Production env). If build fails with `ColumnNotFound` on `WorkspaceSettings`, confirm `DATABASE_URL` is available at **build** time, not only runtime.
+**Neon was likely created with `db push`** (no Prisma migration history). Do **not** run `migrate deploy` on that DB until you baseline (P3005) or use `db push` below.
 
-From local machine (repo root), set production DB URL in shell first:
+From local machine, set production DB URL:
 
 ```powershell
 $env:DATABASE_URL="postgresql://<neon-connection-string>"
+cd web
 ```
 
-Then run:
+### 5.1 Sync schema (recommended for demo Neon)
+
+Adds missing columns (`shopUrl`, `AuthRateLimit`, `EmailOutbox`, etc.) without migration history:
 
 ```powershell
-npx prisma migrate deploy --prefix web
-npm run db:seed --prefix web
+npm run db:push
+npm run db:seed
 ```
 
-Legacy / greenfield only (avoid on shared prod if migrations exist):
+### 5.2 Optional — enable `migrate deploy` on prod later
+
+Only if you want `_prisma_migrations` tracking after schema already matches `schema.prisma`:
 
 ```powershell
-npm run db:push --prefix web
-npm run db:seed --prefix web
+npm run db:push
+npm run db:baseline
 ```
+
+After baseline, future releases can use `npm run db:deploy` against prod before deploy.
+
+### 5.3 Greenfield Neon (empty database)
+
+```powershell
+npm run db:deploy
+npm run db:seed
+```
+
+**Vercel builds** use `next build` only (no DB access at build time). Apply schema changes to Neon manually with §5.1 or §5.3 before redeploying.
 
 ## 6) Custom Domain (Subdomain Recommended)
 
