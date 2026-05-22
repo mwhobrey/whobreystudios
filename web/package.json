@@ -24,6 +24,8 @@
     "db:deploy": "prisma migrate deploy",
     "db:baseline": "node scripts/baseline-prisma-migrations.mjs",
     "db:push": "prisma db push",
+    "db:prod:push": "node scripts/prisma-prod.mjs push",
+    "db:prod:seed": "node scripts/prisma-prod.mjs seed",
     "db:studio": "prisma studio",
     "db:seed": "prisma db seed"
   },

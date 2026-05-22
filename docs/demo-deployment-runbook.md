@@ -208,11 +208,48 @@ Magic-link and studio login attempts are counted in Postgres (`AuthRateLimit`). 
 
 **Neon was likely created with `db push`** (no Prisma migration history). Do **not** run `migrate deploy` on that DB until you baseline (P3005) or use `db push` below.
 
-From local machine, set production DB URL:
+From local machine (repo `web/` folder, Vercel project linked — see §5.0).
+
+### 5.0 Run prod DB commands without copying `DATABASE_URL`
+
+**If `npm run db:prod:push` says “Connection url is empty” or `Target database host: unknown`:**  
+`vercel env pull` writes `DATABASE_URL=""` when the value on Vercel is literally empty (common if the var was added with `vercel env add --sensitive` on CLI 50.5+). Fix Production env first (§5.0.1), then re-run.
+
+**A — `npm run db:prod:*` (recommended):**
+
+Resolves URL from (in order): shell `DATABASE_URL` → `web/.env.production.db.local` → non-empty pulled files → `vercel env run` with local `.env` / `.env.local` temporarily hidden so Docker does not win.
 
 ```powershell
-$env:DATABASE_URL="postgresql://<neon-connection-string>"
 cd web
+npx vercel link
+npm run db:prod:push
+npm run db:prod:seed
+```
+
+**B — One-off local file (when Vercel UI won’t show the secret):**
+
+```powershell
+cd web
+Copy-Item .env.production.db.local.example .env.production.db.local
+# Edit .env.production.db.local — paste Neon pooled URL only; never commit
+npm run db:prod:push
+npm run db:prod:seed
+```
+
+**C — Neon Console:** [console.neon.tech](https://console.neon.tech) → your project → **Connect** → copy the pooled connection string.
+
+#### 5.0.1 Fix empty `DATABASE_URL` on Vercel Production
+
+1. Neon → **Connect** → pooled `postgresql://…` URL.  
+2. Vercel → **whobrey-studios-demo** → Settings → Environment Variables → **DATABASE_URL** (Production) → paste URL and save.  
+   Or CLI (avoid `--sensitive` until CLI is fixed):  
+   `echo "<neon-url>" | npx vercel env update DATABASE_URL production`  
+3. Confirm pull is non-empty (length check only, do not paste secrets in chat):
+
+```powershell
+npx vercel pull --environment=production --yes
+(Get-Content .vercel\.env.production.local | Select-String '^DATABASE_URL=').Line.Length
+# Expect well over 15 characters; if still ~15 (DATABASE_URL="") the value is still empty on Vercel
 ```
 
 ### 5.1 Sync schema (recommended for demo Neon)
@@ -220,8 +257,9 @@ cd web
 Adds missing columns (`shopUrl`, `AuthRateLimit`, `EmailOutbox`, etc.) without migration history:
 
 ```powershell
-npm run db:push
-npm run db:seed
+# Use §5.0 — do not paste secrets into chat or commit .env files
+npx vercel env run --environment=production -- npm run db:push
+npx vercel env run --environment=production -- npm run db:seed
 ```
 
 ### 5.2 Optional — enable `migrate deploy` on prod later
