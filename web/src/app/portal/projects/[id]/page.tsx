@@ -8,6 +8,7 @@ import { listFileAssetsForProject } from "@/lib/data/file-assets";
 import { listMessagesForProject } from "@/lib/data/messages";
 import { getProjectForViewer } from "@/lib/data/projects";
 import { getProjectRevisionUsage } from "@/lib/data/revisions";
+import { PolicyLinks } from "@/components/legal/policy-links";
 import { getWorkspaceSettings } from "@/lib/data/workspace-settings";
 import { getProjectPaymentState } from "@/lib/data/project-payment-state";
 import { formatEnumLabel, formatUsd, statusGuidanceCopy, statusNextAction } from "@/lib/format";
@@ -151,49 +152,10 @@ export default async function PortalProjectDetailPage({ params, searchParams }: 
             ) : null}
           </section>
 
-          {settings.termsUrl || settings.privacyUrl || settings.refundPolicyUrl ? (
-            <section className="ws-panel p-4">
-              <p className="ws-eyebrow">Studio policies</p>
-              <ul className="mt-3 flex flex-wrap gap-2 text-xs">
-                {settings.termsUrl ? (
-                  <li>
-                    <a
-                      href={settings.termsUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="ws-focus-ring rounded-md border border-[color:var(--border-subtle)] bg-[color:var(--surface-sunken)] px-2 py-1 text-text-secondary transition hover:text-text-primary"
-                    >
-                      Terms
-                    </a>
-                  </li>
-                ) : null}
-                {settings.privacyUrl ? (
-                  <li>
-                    <a
-                      href={settings.privacyUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="ws-focus-ring rounded-md border border-[color:var(--border-subtle)] bg-[color:var(--surface-sunken)] px-2 py-1 text-text-secondary transition hover:text-text-primary"
-                    >
-                      Privacy
-                    </a>
-                  </li>
-                ) : null}
-                {settings.refundPolicyUrl ? (
-                  <li>
-                    <a
-                      href={settings.refundPolicyUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="ws-focus-ring rounded-md border border-[color:var(--border-subtle)] bg-[color:var(--surface-sunken)] px-2 py-1 text-text-secondary transition hover:text-text-primary"
-                    >
-                      Refund policy
-                    </a>
-                  </li>
-                ) : null}
-              </ul>
-            </section>
-          ) : null}
+          <section className="ws-panel p-4">
+            <p className="ws-eyebrow">Studio policies</p>
+            <PolicyLinks className="mt-3" />
+          </section>
         </aside>
 
         {/* Right work area */}

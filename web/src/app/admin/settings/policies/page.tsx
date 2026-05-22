@@ -16,7 +16,7 @@ export default async function PolicySettingsPage() {
       variant="admin"
       eyebrow="Admin · Settings"
       title="Policy settings"
-      subtitle="Defaults, legal links, and optional shop link shown in the client portal."
+      subtitle="Defaults, shop link, and optional legal URL overrides. On-site policies live in web/content/legal/."
       backLink={
         <Link
           href="/admin"
@@ -74,9 +74,17 @@ export default async function PolicySettingsPage() {
           </span>
         </label>
 
+        <p className="rounded-lg border border-[color:var(--border-subtle)] bg-[color:var(--surface-sunken)] px-4 py-3 text-sm text-text-muted">
+          Clients see on-site policies at <code className="ws-mono text-xs">/legal/terms</code>,{" "}
+          <code className="ws-mono text-xs">/legal/privacy</code>, and{" "}
+          <code className="ws-mono text-xs">/legal/refund</code>. Edit{" "}
+          <code className="ws-mono text-xs">web/content/legal/*.md</code> and deploy. Optional URL
+          overrides below redirect only while markdown files are still placeholders.
+        </p>
+
         <FormField
-          label="Terms URL"
-          hint="Use a stable public URL (not a sharing link that expires). Client provided Terms in decisions_complete."
+          label="Terms URL (optional override)"
+          hint="Redirects from /legal/terms only while terms.md is still a placeholder."
         >
           <input
             type="url"
@@ -86,7 +94,7 @@ export default async function PolicySettingsPage() {
             className="ws-input"
           />
         </FormField>
-        <FormField label="Privacy URL" hint="Optional">
+        <FormField label="Privacy URL (optional override)" hint="Placeholder redirect for /legal/privacy">
           <input
             type="url"
             name="privacyUrl"
@@ -95,7 +103,7 @@ export default async function PolicySettingsPage() {
             className="ws-input"
           />
         </FormField>
-        <FormField label="Refund policy URL" hint="Optional">
+        <FormField label="Refund policy URL (optional override)" hint="Placeholder redirect for /legal/refund">
           <input
             type="url"
             name="refundPolicyUrl"

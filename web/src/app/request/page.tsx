@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { listActiveServiceTypes } from "@/lib/data/service-types";
+import { PolicyLinks } from "@/components/legal/policy-links";
 import { GuestRequestForm } from "./form";
 import { Wordmark } from "@/components/brand/wordmark";
 
@@ -50,6 +51,11 @@ export default async function GuestRequestPage() {
         <div className="mt-10">
           <GuestRequestForm serviceTypes={serviceTypes} />
         </div>
+
+        <section className="mt-10 border-t border-[color:var(--border-subtle)] pt-6">
+          <p className="ws-eyebrow text-text-faint">Policies</p>
+          <PolicyLinks className="mt-3" />
+        </section>
       </main>
     </div>
   );

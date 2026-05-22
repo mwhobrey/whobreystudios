@@ -139,13 +139,14 @@ Branches: `declined`, `on_hold`, `cancelled` as needed.
 
 ## 8. Open questions (remaining)
 
-1. **Merchant:** provider name, API docs, webhook event model, sandbox credentials, and checkout mode.
-2. **Notifications delivery vendors:** choose SMS/push providers and escalation policy (immediate vs grouped).
-3. **Quote decline UX detail:** exact admin-side copy and default choice after a client decline.
-4. **Auth phase timing:** when to add Google login for clients (if at all in near-term roadmap).
-5. **URLs:** single domain path prefixes (`/admin`, `/portal`) vs subdomains.
-6. **Legal links:** final Terms, Privacy, and Refund/Cancellation URLs for footer/login screens.
-7. **Shop handoff detail:** destination URL and placement for the eventual external shop link.
+**Resolved in build (see `decisions.md`):** Stripe merchant (WHO-6), transactional email (WHO-7), PWA + rate limits + shop nav (WHO-9), on-site legal pages (WHO-8).
+
+1. **Notifications delivery vendors:** SMS/push providers and escalation policy (WHO-11).
+2. **Quote decline UX detail:** exact admin-side copy and default choice after a client decline (implemented; copy polish optional).
+3. **Auth phase timing:** when to add Google login for clients.
+4. **URLs:** single domain path prefixes (`/admin`, `/portal`) vs subdomains.
+5. **Legal copy:** client DOCX imported to `web/content/legal/*.md` (regenerate via `npm run import:legal-docx` when Word files change).
+6. **Shop:** external `shopUrl` in workspace settings (WHO-27); full ecommerce deferred (WHO-10).
 
 ---
 

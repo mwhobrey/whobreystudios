@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { redirect } from "next/navigation";
 import { getAppUser } from "@/lib/auth";
+import { PolicyLinks } from "@/components/legal/policy-links";
 import { MagicLinkForm } from "./ui";
 import { Wordmark } from "@/components/brand/wordmark";
 
@@ -60,6 +61,10 @@ export default async function LoginPage() {
 
             <div className="ws-glass mt-8 p-6">
               <MagicLinkForm />
+            </div>
+
+            <div className="mt-6 flex flex-col items-center gap-3">
+              <PolicyLinks className="justify-center" />
             </div>
 
             <p className="mt-6 text-center text-xs text-text-faint">

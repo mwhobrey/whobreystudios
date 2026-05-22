@@ -22,7 +22,7 @@ Last updated from client response in `decisions_answers.md` (received overnight)
 | Messaging UX (F2) | Threaded messages are fine; wants notification bell with unread indicator. | No real-time chat required for MVP. |
 | Shop scope (G1/G2) | Shop is later and likely a separate website/shop page; shipping TBD later. | Do not build ecommerce in MVP; provide optional link-out later. |
 | Branding assets (H1-H4) | Icon/logo/colors will be provided/iterated by client; shop images later. | Keep placeholders and theme hooks; no blocker for core MVP. |
-| Legal/docs (I1) | Terms/privacy/refund docs will be provided later. | Add placeholder links/settings field now; wire final URLs later. |
+| Legal/docs (I1) | Terms provided via OneDrive folder; on-site pages in portal. | **On-site** `/legal/*` from `web/content/legal/*.md` (client text — not auto-scraped). Admin URL fields = optional redirect while placeholders remain. |
 | Sales tax (I2) | Yes, sales tax required for shop once built. | Track for future shop scope; not blocking portal MVP. |
 
 ## WHO-7 implementation defaults (dev — locked 2026-05-21)
@@ -38,13 +38,21 @@ Not asked in `decisions_complete.md`; recorded for build + Linear [WHO-7](https:
 | Email worker | **Postgres outbox + cron** (not Inngest v1) |
 | Inngest later | Scheduled reminders, digests, SMS/push (WHO-11), heavy async fan-out |
 
+## WHO-8 / WHO-30 (legal + doc sync — 2026-05-21)
+
+| Area | Choice |
+|------|--------|
+| Policy hosting | **First-party** markdown at `/legal/terms`, `/legal/privacy`, `/legal/refund` |
+| Source | `web/content/legal/*.md` in git (client-approved text; versioned with deploys) |
+| OneDrive link | Reference only — **do not** link clients to `1drv.ms` in production |
+| Admin URL fields | Optional **placeholder redirect** until markdown is replaced |
+
 ## Outstanding Inputs (Still Needed)
 
 1. **Google login timing:** phase 1.5 or post-MVP (B1 “later”).
-2. **SMS/push vendors:** WHO-11 (client wants; not blocking WHO-7).
+2. **SMS/push vendors:** WHO-11.
 3. **Domain strategy:** single domain path prefixes (`/admin`, `/portal`) vs subdomains.
-4. **Legal URLs:** stable hosted URLs for terms/privacy/refund (client OneDrive link is interim).
-5. **Shop handoff model:** exact external shop URL (WHO-27).
+4. ~~**Legal copy:**~~ Imported from client DOCX into `web/content/legal/*.md` via `npm run import:legal-docx`.
 
 ## Immediate Build Priorities (Now Unblocked)
 
