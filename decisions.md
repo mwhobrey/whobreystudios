@@ -21,7 +21,7 @@ Last updated from client response in `decisions_answers.md` (received overnight)
 | Notifications (F1) | Client note: SMS/push; **doc default for v1: email + in-app**. | WHO-7: Resend transactional email; in-app bell done (Phase 0). SMS/push → WHO-11. |
 | Messaging UX (F2) | Threaded messages are fine; wants notification bell with unread indicator. | No real-time chat required for MVP. |
 | Shop scope (G1/G2) | Shop is later and likely a separate website/shop page; shipping TBD later. | Do not build ecommerce in MVP; provide optional link-out later. |
-| Branding assets (H1-H4) | Icon/logo/colors will be provided/iterated by client; shop images later. | Keep placeholders and theme hooks; no blocker for core MVP. |
+| Branding assets (H1-H4) | Manrope; `#2EC4B6` / `#000000` / `#FFFFFF`; logos in `public/brand/WS*`. | `npm run sync:brand-assets`; header uses `logo-horizontal.png`. |
 | Legal/docs (I1) | Terms provided via OneDrive folder; on-site pages in portal. | **On-site** `/legal/*` from `web/content/legal/*.md` (client text — not auto-scraped). Admin URL fields = optional redirect while placeholders remain. |
 | Sales tax (I2) | Yes, sales tax required for shop once built. | Track for future shop scope; not blocking portal MVP. |
 

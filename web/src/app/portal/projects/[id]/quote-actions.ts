@@ -14,6 +14,9 @@ export async function approveQuoteAction(
   const projectId = String(formData.get("projectId") ?? "");
   const quoteId = String(formData.get("quoteId") ?? "");
   if (!projectId || !quoteId) return { error: "Missing data." };
+  if (formData.get("acceptedTerms") !== "on") {
+    return { error: "You must accept the Terms of Service and Refund Policy to approve." };
+  }
 
   try {
     await approveQuoteForClient(quoteId, { id: user.id, email: user.email });

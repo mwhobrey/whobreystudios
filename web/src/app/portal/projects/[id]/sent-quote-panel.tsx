@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import Link from "next/link";
+import { useActionState, useState } from "react";
 import { Check, X } from "lucide-react";
 import { approveQuoteAction, declineQuoteAction, type ClientQuoteActionState } from "./quote-actions";
 import { formatUsd } from "@/lib/format";
@@ -33,6 +34,7 @@ export function SentQuotePanel({
   const [approveState, approveAct, approvePending] = useActionState(approveQuoteAction, {} as ClientQuoteActionState);
   const [declineState, declineAct, declinePending] = useActionState(declineQuoteAction, {} as ClientQuoteActionState);
 
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const err = approveState.error ?? declineState.error;
   const busy = approvePending || declinePending;
 
@@ -87,13 +89,42 @@ export function SentQuotePanel({
           </div>
         ) : null}
 
-        <div className="mt-6 flex flex-wrap gap-3">
-          <form action={approveAct}>
+        <div className="mt-6 flex flex-wrap items-end gap-3">
+          <form action={approveAct} className="flex min-w-[min(100%,20rem)] flex-1 flex-col gap-4">
             <input type="hidden" name="projectId" value={projectId} />
             <input type="hidden" name="quoteId" value={quoteId} />
+            <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-sunken)] px-4 py-3 text-sm text-text-secondary">
+              <input
+                type="checkbox"
+                name="acceptedTerms"
+                value="on"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 accent-[color:var(--brand-primary)]"
+              />
+              <span>
+                I agree to the{" "}
+                <Link
+                  href="/legal/terms"
+                  target="_blank"
+                  className="font-medium text-[color:var(--brand-primary)] underline-offset-2 hover:underline"
+                >
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link
+                  href="/legal/refund"
+                  target="_blank"
+                  className="font-medium text-[color:var(--brand-primary)] underline-offset-2 hover:underline"
+                >
+                  Refund &amp; Cancellation Policy
+                </Link>
+                .
+              </span>
+            </label>
             <AppButton
               type="submit"
-              disabled={busy}
+              disabled={busy || !acceptedTerms}
               loading={approvePending}
               roleVariant="portal"
               iconLeft={!approvePending ? <Check className="h-4 w-4" /> : undefined}

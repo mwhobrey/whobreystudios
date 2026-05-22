@@ -47,7 +47,7 @@ function layout(content: string): string {
 
 function cta(href: string, label: string): string {
   return `<p style="margin:20px 0 0;">
-    <a href="${escapeHtml(href)}" style="display:inline-block;background:#c8f542;color:#0a0a0f;font-weight:600;text-decoration:none;padding:12px 20px;border-radius:10px;">${escapeHtml(label)}</a>
+    <a href="${escapeHtml(href)}" style="display:inline-block;background:#2EC4B6;color:#000000;font-weight:600;text-decoration:none;padding:12px 20px;border-radius:10px;">${escapeHtml(label)}</a>
   </p>`;
 }
 

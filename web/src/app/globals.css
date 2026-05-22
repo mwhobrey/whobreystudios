@@ -32,19 +32,17 @@
   --obsidian-100: #d6d6dc;
   --obsidian-50:  #f5f5f7;
 
-  --brand-chartreuse: #d4ff3d;
-  --brand-chartreuse-soft: #b9e633;
-  --brand-magenta: #ff4d8d;
-  --brand-magenta-soft: #f53e7d;
-  --brand-cyan: #5ee9ff;
-  --brand-cyan-soft: #3fcde6;
-  --brand-amber: #fbbf24;
+  /* Client palette (decisions_complete / May 2026) */
+  --brand-teal: #2ec4b6;
+  --brand-teal-soft: #26b0a4;
+  --brand-black: #000000;
+  --brand-white: #ffffff;
 
   /* --- 2. Surfaces / borders / text -------------------------------------- */
-  --background: var(--obsidian-900);
-  --foreground: var(--obsidian-50);
+  --background: var(--brand-black);
+  --foreground: var(--brand-white);
 
-  --surface-base:    var(--obsidian-900);
+  --surface-base:    var(--brand-black);
   --surface-raised:  rgba(24, 24, 30, 0.72);
   --surface-overlay: rgba(14, 14, 18, 0.92);
   --surface-sunken:  var(--obsidian-950);
@@ -53,35 +51,35 @@
   --border-subtle:   rgba(255, 255, 255, 0.06);
   --border-default:  rgba(255, 255, 255, 0.10);
   --border-strong:   rgba(255, 255, 255, 0.18);
-  --border-emphasis: rgba(212, 255, 61, 0.35);
+  --border-emphasis: rgba(46, 196, 182, 0.45);
 
-  --text-primary:   var(--obsidian-50);
+  --text-primary:   var(--brand-white);
   --text-secondary: var(--obsidian-100);
   --text-muted:     var(--obsidian-200);
   --text-faint:     var(--obsidian-300);
   --text-inverse:   var(--obsidian-950);
 
   /* --- 3. Brand + role accents ------------------------------------------ */
-  --brand-primary:        var(--brand-chartreuse);
-  --brand-primary-hover:  var(--brand-chartreuse-soft);
-  --brand-primary-glow:   rgba(212, 255, 61, 0.28);
-  --brand-on-primary:     var(--obsidian-950);
+  --brand-primary:        var(--brand-teal);
+  --brand-primary-hover:  var(--brand-teal-soft);
+  --brand-primary-glow:   rgba(46, 196, 182, 0.32);
+  --brand-on-primary:     var(--brand-black);
 
-  --brand-secondary:      var(--brand-magenta);
-  --brand-secondary-glow: rgba(255, 77, 141, 0.28);
+  --brand-secondary:      var(--brand-teal-soft);
+  --brand-secondary-glow: rgba(46, 196, 182, 0.22);
 
-  --accent-cool:   var(--brand-cyan);
-  --accent-cool-glow: rgba(94, 233, 255, 0.24);
-  --accent-warm:   var(--brand-amber);
-  --accent-warm-glow: rgba(251, 191, 36, 0.24);
+  --accent-cool:   var(--brand-teal);
+  --accent-cool-glow: rgba(46, 196, 182, 0.24);
+  --accent-warm:   var(--brand-teal-soft);
+  --accent-warm-glow: rgba(46, 196, 182, 0.18);
 
-  --role-admin-tint:  var(--brand-amber);
-  --role-admin-glow:  rgba(251, 191, 36, 0.22);
-  --role-admin-grad:  linear-gradient(135deg, #fbbf24 0%, #ff4d8d 60%, #d4ff3d 100%);
+  --role-admin-tint:  var(--brand-teal);
+  --role-admin-glow:  rgba(46, 196, 182, 0.22);
+  --role-admin-grad:  linear-gradient(135deg, #2ec4b6 0%, #26b0a4 100%);
 
-  --role-portal-tint: var(--brand-cyan);
-  --role-portal-glow: rgba(94, 233, 255, 0.22);
-  --role-portal-grad: linear-gradient(135deg, #5ee9ff 0%, #ff4d8d 60%, #d4ff3d 100%);
+  --role-portal-tint: var(--brand-teal);
+  --role-portal-glow: rgba(46, 196, 182, 0.28);
+  --role-portal-grad: linear-gradient(135deg, #2ec4b6 0%, #1a9e92 100%);
 
   /* --- 4. Status palette (semantic, brand-independent) ------------------ */
   --status-neutral-bg:    rgba(120, 120, 130, 0.16);
@@ -179,9 +177,9 @@
   --color-accent-cool:     var(--accent-cool);
   --color-accent-warm:     var(--accent-warm);
 
-  --font-sans:    var(--font-geist-sans);
+  --font-sans:    var(--font-manrope);
   --font-mono:    var(--font-geist-mono);
-  --font-display: var(--font-instrument-serif);
+  --font-display: var(--font-manrope);
 }
 
 /* ---------------------------------------------------------------------------
@@ -189,15 +187,13 @@
  * ------------------------------------------------------------------------- */
 body {
   background:
-    radial-gradient(1200px 700px at 8% -10%, rgba(255, 77, 141, 0.16), transparent 60%),
-    radial-gradient(1100px 650px at 92% -5%, rgba(94, 233, 255, 0.12), transparent 60%),
-    radial-gradient(900px 600px at 50% 110%, rgba(212, 255, 61, 0.08), transparent 65%),
-    radial-gradient(700px 500px at 80% 80%, rgba(167, 139, 250, 0.07), transparent 70%),
+    radial-gradient(1200px 700px at 8% -10%, rgba(46, 196, 182, 0.14), transparent 60%),
+    radial-gradient(1100px 650px at 92% -5%, rgba(46, 196, 182, 0.08), transparent 60%),
+    radial-gradient(900px 600px at 50% 110%, rgba(46, 196, 182, 0.06), transparent 65%),
     var(--background);
   background-attachment: fixed;
   color: var(--foreground);
-  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
-  font-feature-settings: "ss01", "cv11";
+  font-family: var(--font-manrope), ui-sans-serif, system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -317,7 +313,8 @@ body::before {
 .ws-press:active { transform: scale(0.985); }
 
 .ws-display {
-  font-family: var(--font-instrument-serif), Georgia, "Times New Roman", serif;
+  font-family: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
   font-feature-settings: "ss01", "liga", "calt";
   font-weight: 400;
   letter-spacing: -0.01em;

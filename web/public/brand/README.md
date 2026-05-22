@@ -1,11 +1,31 @@
-# Client brand assets (WHO-25)
+# Client brand assets
 
-Drop finalized files here. The app uses them automatically when present.
+## App-facing files (stable URLs)
 
-| File | Purpose |
-|------|---------|
-| `icon-192.png` | PWA / home-screen (192×192) |
-| `icon-512.png` | PWA splash / install (512×512) |
-| `logo.svg` or `logo.png` | Optional; header still uses built-in wordmark until wired |
+These are copied from `WS Web Images/` and `WS Logo/` when client drops new files. Re-run:
 
-If PNG icons are missing, install still works via `favicon.svg` in `manifest.webmanifest`.
+```bash
+cd web
+npm run sync:brand-assets
+```
+
+| File | Source (typical) | Used for |
+|------|------------------|----------|
+| `icon-192.png` | `WS Web Images/WS_app_icon.png` | PWA, Apple touch |
+| `icon-512.png` | same | PWA install |
+| `logo-horizontal.png` | `WS Logo/whobrey_studios_logo_white.png` | Header wordmark |
+| `emblem-white.svg` | `WS Logo/Whobrey Studios Emblem (White).svg` | Monogram variant |
+| `emblem-white.png` | `WS Logo/whobrey_studios_emblem_white_v3.png` | Fallback |
+
+## Client palette (CSS tokens)
+
+- **Font:** [Manrope](https://fonts.google.com/specimen/Manrope)
+- **Primary:** `#2EC4B6`
+- **Black / white:** `#000000` / `#FFFFFF`
+
+## Source folders
+
+- `WS Logo/` — logos, emblems, archives
+- `WS Web Images/` — app icon, header art
+
+Do not reference paths with spaces in code; sync into the flat files above.
