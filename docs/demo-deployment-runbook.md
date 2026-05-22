@@ -185,9 +185,22 @@ Magic-link and studio login attempts are counted in Postgres (`AuthRateLimit`). 
 1. Push your branch to GitHub.
 2. In Vercel: Add New Project -> import this repo.
 3. Framework preset: Next.js (auto-detected).
-4. Set Root Directory to `web`.
+4. **Root Directory → `web`** (required — not the repo root).  
+   If you see *"No Next.js version detected"*, this step was skipped or reset.
 5. Add all environment variables from section 2.
 6. Trigger initial production deploy.
+
+### 4.1 Vercel project settings (demo)
+
+| Setting | Value |
+|---------|--------|
+| Framework Preset | Next.js (auto after root dir is `web`) |
+| Root Directory | **`web`** |
+| Build Command | *(default)* `npm run build` |
+| Install Command | *(default)* `npm install` |
+| Output Directory | *(default)* Next.js |
+
+`web/vercel.json` configures the email-outbox cron (`*/5 * * * *`).
 
 ## 5) Database Setup (Migrate + Seed)
 
