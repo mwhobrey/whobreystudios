@@ -206,6 +206,8 @@ Magic-link and studio login attempts are counted in Postgres (`AuthRateLimit`). 
 
 ## 5) Database Setup (Migrate + Seed)
 
+**Production schema:** Vercel `npm run build` runs `prisma migrate deploy` when `DATABASE_URL` is set on the project (required for Production env). If build fails with `ColumnNotFound` on `WorkspaceSettings`, confirm `DATABASE_URL` is available at **build** time, not only runtime.
+
 From local machine (repo root), set production DB URL in shell first:
 
 ```powershell
@@ -215,14 +217,14 @@ $env:DATABASE_URL="postgresql://<neon-connection-string>"
 Then run:
 
 ```powershell
-npm run db:push --prefix web
+npx prisma migrate deploy --prefix web
 npm run db:seed --prefix web
 ```
 
-If you use Prisma migrations instead of push in your environment:
+Legacy / greenfield only (avoid on shared prod if migrations exist):
 
 ```powershell
-npm run db:migrate --prefix web
+npm run db:push --prefix web
 npm run db:seed --prefix web
 ```
 

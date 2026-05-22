@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { LegalProse } from "@/components/legal/legal-prose";
 import { Wordmark } from "@/components/brand/wordmark";
@@ -8,25 +8,9 @@ import {
   getLegalDocument,
   isLegalSlug,
   LEGAL_SLUGS,
-  type LegalSlug,
 } from "@/lib/legal/documents";
-import { getWorkspaceSettings } from "@/lib/data/workspace-settings";
 
 type Props = { params: Promise<{ slug: string }> };
-
-function externalOverrideUrl(
-  slug: LegalSlug,
-  settings: Awaited<ReturnType<typeof getWorkspaceSettings>>,
-): string | null {
-  const raw =
-    slug === "terms"
-      ? settings.termsUrl
-      : slug === "privacy"
-        ? settings.privacyUrl
-        : settings.refundPolicyUrl;
-  const trimmed = raw?.trim();
-  return trimmed || null;
-}
 
 export function generateStaticParams() {
   return LEGAL_SLUGS.map((slug) => ({ slug }));
@@ -36,13 +20,8 @@ export default async function LegalPage({ params }: Props) {
   const { slug } = await params;
   if (!isLegalSlug(slug)) notFound();
 
-  const [doc, settings] = await Promise.all([getLegalDocument(slug), getWorkspaceSettings()]);
+  const doc = await getLegalDocument(slug);
   if (!doc) notFound();
-
-  const externalUrl = externalOverrideUrl(slug, settings);
-  if (externalUrl && doc.isPlaceholder) {
-    redirect(externalUrl);
-  }
 
   return (
     <div className="relative isolate min-h-screen overflow-hidden">
@@ -65,30 +44,9 @@ export default async function LegalPage({ params }: Props) {
 
         <article className="ws-panel mt-8 p-6 sm:p-8">
           <h1 className="ws-display text-2xl text-text-primary">{doc.title}</h1>
-          {doc.isPlaceholder ? (
-            <p className="mt-3 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-100/90">
-              Placeholder content — replace{" "}
-              <code className="ws-mono text-xs">web/content/legal/{slug}.md</code> with
-              client-approved text before production.
-            </p>
-          ) : null}
           <div className="mt-6">
             <LegalProse markdown={doc.body} />
           </div>
-          {externalUrl && !doc.isPlaceholder ? (
-            <p className="mt-8 border-t border-[color:var(--border-subtle)] pt-4 text-xs text-text-faint">
-              Also published at{" "}
-              <a
-                href={externalUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[color:var(--brand-primary)] underline"
-              >
-                external copy
-              </a>
-              .
-            </p>
-          ) : null}
         </article>
       </div>
     </div>
