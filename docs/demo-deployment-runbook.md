@@ -148,12 +148,14 @@ Notes:
 1. Create a Resend account and API key → `RESEND_API_KEY` in Vercel / local `web/.env`.
 2. Add and verify sending domain **`whobrey-studios.llc`** (SPF/DKIM records at your DNS host).
 3. Set `EMAIL_FROM` e.g. `Whobrey Studios <portal@whobrey-studios.llc>`.
-4. **Outbox worker (WHO-22):** set `CRON_SECRET` and schedule Vercel Cron:
-   - Path: `/api/cron/email-outbox` (Vercel Cron issues **GET**; manual curl may use **POST**)
-   - Header: `Authorization: Bearer <CRON_SECRET>` (Vercel injects this automatically when `CRON_SECRET` is set)
+4. **Outbox worker (WHO-22):** set `CRON_SECRET` and schedule something to call the drain route:
+   - Path: `GET` or `POST` `https://<your-domain>/api/cron/email-outbox`
+   - Header: `Authorization: Bearer <CRON_SECRET>`
    - Optional query: `?batchSize=20` (max 100)
-   - Suggested schedule: every 5 minutes (`*/5 * * * *`).
-   - Local drain without deploy: `cd web && npm run verify:email-outbox` (needs `DATABASE_URL`; Resend keys optional — rows stay pending if unset).
+   - **Vercel Hobby:** built-in Cron is limited to **once per day** (no `*/5` schedules). We do **not** ship a Vercel cron in `web/vercel.json` for that reason.
+   - **Recommended (demo):** [cron-job.org](https://cron-job.org) (or similar) — free tier can hit the URL every 5 minutes with the Bearer header.
+   - **Optional Vercel Pro:** add to `web/vercel.json`: `"crons": [{ "path": "/api/cron/email-outbox", "schedule": "*/5 * * * *" }]`
+   - Local drain: `cd web && npm run verify:email-outbox` (needs `DATABASE_URL`; Resend keys optional — rows stay pending if unset).
 5. Dev without domain verify: Resend onboarding domain works for test sends only.
 
 **E2E smoke (WHO-7):**
@@ -200,7 +202,7 @@ Magic-link and studio login attempts are counted in Postgres (`AuthRateLimit`). 
 | Install Command | *(default)* `npm install` |
 | Output Directory | *(default)* Next.js |
 
-`web/vercel.json` configures the email-outbox cron (`*/5 * * * *`).
+`web/vercel.json` is intentionally empty of crons on **Hobby** — use an external scheduler (see §3.3).
 
 ## 5) Database Setup (Migrate + Seed)
 
