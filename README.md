@@ -7,6 +7,7 @@ Graphic design **client portal** and **admin** workflow (quotes, revisions, file
 | Path | Purpose |
 |------|---------|
 | `web/` | Next.js (App Router) app: UI + API routes |
+| `docs/runbook/00_INDEX.md` | **Onboarding runbook** — start here; links to architecture, files, rules, current state |
 | `docker-compose.yml` | Local PostgreSQL |
 | `DESIGN.md` | Technical design + requirement traceability |
 | `decisions.md` | Checklist for the client |

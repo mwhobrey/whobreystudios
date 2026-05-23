@@ -63,8 +63,10 @@ Thumbs.db
 # Certificates / keys
 *.pem
 
-# Cursor — local workspace metadata
-.cursor/
+# Cursor — local workspace metadata (team rules under .cursor/rules/ are tracked)
+.cursor/*
+!.cursor/rules/
+!.cursor/rules/**
 
 # Next.js env types (regenerated)
 web/next-env.d.ts

@@ -1,0 +1,33 @@
+---
+description: Whobrey Studios project runbook — read before making architectural or feature changes
+alwaysApply: true
+---
+
+# Whobrey Studios — Project Runbook
+
+Before non-trivial work, read **`docs/runbook/00_INDEX.md`** (North Star + links) and **`docs/runbook/04_CURRENT_STATE.md`** (what is shipped vs incomplete).
+
+## Runbook map
+
+| File | Use when |
+|------|----------|
+| `docs/runbook/00_INDEX.md` | Orientation, North Star, read order |
+| `docs/runbook/01_ARCHITECTURE.md` | Stack, patterns, data flow, external APIs |
+| `docs/runbook/02_COMPONENTS_AND_FILES.md` | Where code lives — routes, modules, config |
+| `docs/runbook/03_RULES_AND_STANDARDS.md` | Conventions, git/commits, testing, gotchas |
+| `docs/runbook/04_CURRENT_STATE.md` | Working vs incomplete vs next steps |
+
+Also: `DESIGN.md`, `decisions_complete.md`, `web/AGENTS.md` (Next.js 16).
+
+## Non-negotiables
+
+- Production code lives in **`web/`** only (not `whobrey-studios-app/`).
+- Import **`@/lib/auth`** — never `@/auth` in feature code.
+- DB/domain logic in **`lib/data/`** — not in page components.
+- Check **`decisions_complete.md`** before changing payments, revisions, or auth.
+- Run **`npm run verify:tranche`** from `web/` before claiming core flows are done.
+- Update runbook files when adding routes, env vars, or conventions.
+
+## Commits
+
+Format: `[WHO-123] :gitmoji: type(scope): summary` — gitmoji from gitmoji.dev. No commit trailers.
