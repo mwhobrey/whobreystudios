@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { IntakeCategoryTracker } from "@/components/analytics/intake-category-tracker";
 import { IntakeShell } from "@/components/marketing/intake-shell";
 import { IntakeDetailsForm } from "@/components/project-intake/intake-details-form";
 import { PolicyLinks } from "@/components/legal/policy-links";
@@ -29,6 +30,7 @@ export default async function NewProjectDetailsPage({ searchParams }: Props) {
 
   return (
     <IntakeShell title="New Project">
+      <IntakeCategoryTracker category={category.slug} />
       <Link
         href="/projects/new"
         className="ws-focus-ring mb-6 inline-flex items-center gap-1.5 rounded text-sm text-text-muted hover:text-text-primary"

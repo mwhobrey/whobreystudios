@@ -344,7 +344,34 @@ Notes:
 - If DNS/SSL is still propagating, clients may temporarily see cert errors, `NXDOMAIN`, or failed challenges — wait globally, then retry alias/cert in Vercel.
 - Vercel build may warn about NFT tracing involving `project-files.ts`; it does not block deploy.
 
-## 11) Further reading
+## 11) Vercel Analytics & Speed Insights
+
+After the first deploy with `@vercel/analytics` and `@vercel/speed-insights` in the app:
+
+1. Open the Vercel project → **Analytics** → enable **Web Analytics** (if not already on for the team).
+2. Open **Speed Insights** → enable for this project.
+3. Redeploy production once if the dashboard says instrumentation is missing.
+
+No extra env vars are required on Vercel — the SDK auto-detects the deployment. Locally, scripts are inert (no data sent).
+
+**Where to look**
+
+| Product | Dashboard tab | What you get |
+|---------|---------------|--------------|
+| Web Analytics | Analytics → Web | Page views, referrers, countries, custom events |
+| Speed Insights | Speed Insights | Real User Metrics (LCP, FID, CLS, TTFB) |
+
+**Custom events** (see `web/src/lib/analytics/track-client-event.ts`):
+
+| Event | When |
+|-------|------|
+| `landing_card_clicked` | Home nav card click (`my_project`, `new_project`, `shop`) |
+| `intake_category_viewed` | User reaches `/projects/new/details` for a category |
+| `intake_submitted` | Guest or client project request successfully submitted |
+
+Do not add emails, names, or project IDs to custom event payloads.
+
+## 12) Further reading
 
 - Product/design intent and long-term stack notes: [DESIGN.md](../DESIGN.md) at repo root
 - Local dev and defaults: [README.md](../README.md)

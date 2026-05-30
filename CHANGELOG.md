@@ -4,6 +4,14 @@ All notable changes to the Whobrey Studios client portal (`web/`) are documented
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning uses [SemVer](https://semver.org/) on `web/package.json`.
 
+## [0.2.1] - 2026-05-30
+
+### Added
+
+- **Vercel Web Analytics** and **Speed Insights** in root layout (`@vercel/analytics`, `@vercel/speed-insights`).
+- Typed custom events for intake funnel: `landing_card_clicked`, `intake_category_viewed`, `intake_submitted`.
+- Deployment runbook §11 — enable Analytics and Speed Insights in the Vercel dashboard.
+
 ## [0.2.0] - 2026-05-30
 
 ### Added
@@ -29,5 +37,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Version
 
 Initial shipped MVP: auth, guest/client intake, quotes, Stripe payments, files, revisions, notifications, admin settings, marketing landing, and demo deployment runbook.
 
+[0.2.1]: https://github.com/mwhobrey/whobreystudios/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/mwhobrey/whobreystudios/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/mwhobrey/whobreystudios/releases/tag/v0.1.0

@@ -104,6 +104,8 @@ Intake UX config (static categories, not DB): `lib/project-intake/categories.ts`
 | `components/brand/wordmark.tsx` | Brand mark |
 | `components/marketing/*` | Public landing header, intake shell, nav cards |
 | `components/project-intake/*` | Service picker, unified intake details form |
+| `components/analytics/*` | Vercel Web Analytics + Speed Insights; intake funnel trackers |
+| `lib/analytics/track-client-event.ts` | Typed custom event helper (no PII) |
 
 ### `web/src/auth.ts` — auth provider config only
 

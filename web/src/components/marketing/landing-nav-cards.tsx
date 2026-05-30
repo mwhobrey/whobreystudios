@@ -1,9 +1,15 @@
+"use client";
+
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import { ArrowRight, FolderOpen, ShoppingBag, Sparkles } from "lucide-react";
+import { trackClientEvent } from "@/lib/analytics/track-client-event";
 import { cx } from "@/lib/ui";
 
+type CardId = "my_project" | "new_project" | "shop";
+
 type Card = {
+  id: CardId;
   title: string;
   description: string;
   href: string;
@@ -26,6 +32,7 @@ export function LandingNavCards({
 }: Props) {
   const cards: Card[] = [
     {
+      id: "my_project",
       title: "My Project",
       description:
         "Log in to access and manage an existing project with Whobrey Studios.",
@@ -35,6 +42,7 @@ export function LandingNavCards({
         "border-[color:var(--status-info-ring)]/40 hover:border-[color:var(--status-info-ring)]/70",
     },
     {
+      id: "new_project",
       title: "New Project",
       description:
         "Interested in starting a new project or getting an estimate? Start here.",
@@ -44,6 +52,7 @@ export function LandingNavCards({
       featured: true,
     },
     {
+      id: "shop",
       title: "Shop",
       description: shopHref
         ? "Browse and purchase products — from decals to hoodies — for local pickup or delivery."
@@ -59,7 +68,11 @@ export function LandingNavCards({
   return (
     <section aria-label="Get started">
       <div className="grid gap-4 md:grid-cols-3 md:gap-5">
-        {cards.map(({ title, description, href, icon: Icon, accent, featured, external }) => {
+        {cards.map(({ id, title, description, href, icon: Icon, accent, featured, external }) => {
+          const onNavigate = () => {
+            trackClientEvent({ name: "landing_card_clicked", data: { card: id } });
+          };
+
           const inner = (
             <>
               <div>
@@ -92,6 +105,7 @@ export function LandingNavCards({
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={onNavigate}
                 className={className}
               >
                 {inner}
@@ -100,7 +114,7 @@ export function LandingNavCards({
           }
 
           return (
-            <Link key={title} href={href} className={className}>
+            <Link key={title} href={href} onClick={onNavigate} className={className}>
               {inner}
             </Link>
           );

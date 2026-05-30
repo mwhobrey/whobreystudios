@@ -28,6 +28,7 @@ import {
   type CreateProjectFormState,
 } from "@/app/portal/projects/new/actions";
 import type { IntakeCategory } from "@/lib/project-intake/categories";
+import { trackClientEvent } from "@/lib/analytics/track-client-event";
 import { AppButton } from "@/components/ui/app-button";
 import { AlertBanner } from "@/components/ui/alert-banner";
 import { FormField } from "@/components/ui/form-field";
@@ -68,6 +69,7 @@ export function IntakeDetailsForm({
   const [files, setFiles] = useState<File[]>([]);
   const [dragOver, setDragOver] = useState(false);
   const createdProjectIdRef = useRef<string | null>(null);
+  const intakeSubmittedTrackedRef = useRef(false);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
@@ -126,7 +128,24 @@ export function IntakeDetailsForm({
   }
 
   useEffect(() => {
+    if (mode === "guest" && guestState.submitted && !intakeSubmittedTrackedRef.current) {
+      intakeSubmittedTrackedRef.current = true;
+      trackClientEvent({
+        name: "intake_submitted",
+        data: { category: category.slug, mode: "guest" },
+      });
+    }
+  }, [category.slug, guestState.submitted, mode]);
+
+  useEffect(() => {
     if (mode !== "client" || !clientState.projectId) return;
+    if (!intakeSubmittedTrackedRef.current) {
+      intakeSubmittedTrackedRef.current = true;
+      trackClientEvent({
+        name: "intake_submitted",
+        data: { category: category.slug, mode: "client" },
+      });
+    }
     if (createdProjectIdRef.current === clientState.projectId) return;
     createdProjectIdRef.current = clientState.projectId;
     const queued = [...files];
@@ -168,7 +187,7 @@ export function IntakeDetailsForm({
     return () => {
       cancelled = true;
     };
-  }, [clientState.projectId, files, mode, router]);
+  }, [category.slug, clientState.projectId, files, mode, router]);
 
   if (mode === "guest" && guestState.submitted) {
     return (

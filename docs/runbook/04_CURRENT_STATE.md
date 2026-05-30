@@ -92,6 +92,7 @@ _Last reviewed: 2026-05-30_
 - [x] Brand asset sync script
 - [x] Marketing landing page (`/`) with Option A nav cards (My Project, New Project, Shop)
 - [x] Public FAQ page (`/faq`) — workflow help migrated from former landing capability strip
+- [x] Vercel Web Analytics + Speed Insights (`@vercel/analytics`, `@vercel/speed-insights`) with intake funnel custom events
 
 ### API
 
