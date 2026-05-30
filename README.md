@@ -7,7 +7,8 @@ Graphic design **client portal** and **admin** workflow (quotes, revisions, file
 | Path | Purpose |
 |------|---------|
 | `web/` | Next.js (App Router) app: UI + API routes |
-| `docs/runbook/00_INDEX.md` | **Onboarding runbook** — start here; links to architecture, files, rules, current state |
+| `docs/runbook/` | **Onboarding runbook** — start here; links to architecture, files, rules, current state |
+| `CHANGELOG.md` | SemVer release notes for `web/` |
 | `docker-compose.yml` | Local PostgreSQL |
 | `DESIGN.md` | Technical design + requirement traceability |
 | `decisions.md` | Checklist for the client |
@@ -41,7 +42,7 @@ Manual breakdown (only if you prefer): `docker compose up -d`, copy `web/.env.ex
 
 **Prerequisites:** Node 20+, Docker for Postgres. If `localhost` fails to resolve, use `127.0.0.1` in `DATABASE_URL` in `web/.env`.
 
-Open [http://localhost:3000](http://localhost:3000). Sign in at `/login` with seeded users (defaults):
+Open [http://localhost:3000](http://localhost:3000). **New project:** `/projects/new` (service picker → details form). **FAQ:** `/faq`. Sign in at `/login` with seeded users (defaults):
 
    - **Admin:** `admin@whobrey.local` / `dev-admin-password` → `/admin`
    - **Client:** `client@whobrey.local` / `dev-client-password` → `/portal`

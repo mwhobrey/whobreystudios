@@ -78,6 +78,8 @@ whobrey-studios/                         # Git root
 | `service-types.ts` | Active types for forms, admin list |
 | `workspace-settings.ts` | Singleton policy row (deposit %, legal URLs, shop URL) |
 
+Intake UX config (static categories, not DB): `lib/project-intake/categories.ts`.
+
 ### `web/src/lib/` — adapters & shared utilities
 
 | Path | Owns |
@@ -100,7 +102,8 @@ whobrey-studios/                         # Git root
 | `components/project-*.tsx` | Project-scoped UI: files, messages, summary, nav |
 | `components/notification-bell.tsx` | In-app notification dropdown |
 | `components/brand/wordmark.tsx` | Brand mark |
-| `components/legal/*` | Policy links, markdown prose renderer |
+| `components/marketing/*` | Public landing header, intake shell, nav cards |
+| `components/project-intake/*` | Service picker, unified intake details form |
 
 ### `web/src/auth.ts` — auth provider config only
 
@@ -112,14 +115,17 @@ Auth.js providers, callbacks, adapter wiring. **Feature code must not import fro
 
 | Path | Auth | Key files |
 |------|------|-----------|
-| `/` | Public | `app/page.tsx` |
-| `/request` | Public | `app/request/page.tsx`, `form.tsx`, `actions.ts` |
+| `/` | Public | `app/page.tsx`, `components/marketing/*` |
+| `/faq` | Public | `app/faq/page.tsx` |
+| `/projects/new` | Public | `app/projects/new/page.tsx`, `components/project-intake/service-type-picker.tsx` |
+| `/projects/new/details` | Public | `app/projects/new/details/page.tsx`, `components/project-intake/intake-details-form.tsx` |
+| `/request` | Public | Redirect → `/projects/new` (`app/request/page.tsx`, `actions.ts`) |
 | `/login` | Public | `app/login/page.tsx`, `actions.ts`, `ui.tsx` |
 | `/login/studio` | Public | `app/login/studio/page.tsx`, `actions.ts`, `ui.tsx` |
 | `/login/check-email` | Public | `app/login/check-email/page.tsx` |
 | `/post-login` | Session | `app/post-login/page.tsx` → redirects by role |
 | `/portal` | `client` | `app/portal/page.tsx`, `layout.tsx` |
-| `/portal/projects/new` | `client` | `form.tsx`, `actions.ts` |
+| `/portal/projects/new` | Public | Redirect → `/projects/new` |
 | `/portal/projects/[id]` | `client` | `page.tsx`, `quote-actions.ts`, `payment-panel.tsx`, `sent-quote-panel.tsx` |
 | `/admin` | `admin` | `app/admin/page.tsx`, `layout.tsx` |
 | `/admin/projects` | `admin` | `app/admin/projects/page.tsx` |
@@ -153,7 +159,7 @@ Auth.js providers, callbacks, adapter wiring. **Feature code must not import fro
 
 | File | Feature |
 |------|---------|
-| `app/request/actions.ts` | Guest intake submit |
+| `app/request/actions.ts` | Guest intake submit (used by `IntakeDetailsForm`) |
 | `app/portal/projects/new/actions.ts` | Authenticated client intake |
 | `app/portal/projects/[id]/quote-actions.ts` | Client approve / decline quote |
 | `app/admin/projects/[id]/quote-actions.ts` | Admin quote save / send / line items |

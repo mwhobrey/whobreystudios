@@ -21,7 +21,7 @@ Whobrey Studios is a **dual-role web application** for a graphic design business
 |---------|------|---------|
 | **Client portal** (`/portal`) | Clients | Submit requests, review quotes, pay deposits/finals, download deliverables, message on projects |
 | **Admin workspace** (`/admin`) | Business owner | Review intake, build/send quotes, manage status, upload files, configure policies |
-| **Public** (`/`, `/request`, `/legal/*`) | Guests & marketing | Landing, guest intake, legal pages |
+| **Public** (`/`, `/projects/new`, `/faq`, `/legal/*`) | Guests & marketing | Landing, intake picker + details, FAQ, legal pages |
 
 **Production code lives in `web/`** — a Next.js 16 App Router app with PostgreSQL (Prisma), Auth.js, Stripe payments, Resend email, and S3-compatible file storage (local dev / Cloudflare R2 in production).
 

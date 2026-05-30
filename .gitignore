@@ -70,3 +70,5 @@ Thumbs.db
 
 # Next.js env types (regenerated)
 web/next-env.d.ts
+
+.vercel

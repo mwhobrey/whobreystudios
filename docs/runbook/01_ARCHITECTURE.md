@@ -133,8 +133,8 @@ flowchart TB
 
 | Entry point | What gets created | Path |
 |-------------|-------------------|------|
-| Guest intake `/request` | `Project` (+ optional intake `FileAsset`) | Server action → `lib/data/projects.ts` |
-| Client intake `/portal/projects/new` | `Project` with `clientUserId` | Same |
+| Guest intake `/projects/new` → `/projects/new/details` | `Project` (+ optional intake `FileAsset` for signed-in clients) | Server action → `lib/data/projects.ts` |
+| Client intake (same flow when signed in) | `Project` with `clientUserId` | Same |
 | Admin quote builder | `Quote`, `QuoteLineItem` | `lib/data/quotes.ts` |
 | File upload | `FileAsset` + bytes in storage | `lib/data/file-assets.ts` → `lib/storage/project-files.ts` |
 | Messages | `Message` (threaded) | `lib/data/messages.ts` |
@@ -249,7 +249,7 @@ From `DESIGN.md` §5:
 ```mermaid
 flowchart TB
   subgraph intake [Intake]
-    R["/request or /portal/projects/new"]
+    R["/projects/new → /projects/new/details"]
     R --> P[Project new_request]
   end
 

@@ -4,7 +4,7 @@ What works today, what doesn't, and what to build next. **This file should chang
 
 **See also:** [00_INDEX.md](./00_INDEX.md) · [DESIGN.md](../../DESIGN.md) · [docs/linear-workspace.md](../linear-workspace.md)
 
-_Last reviewed: 2026-05-22_
+_Last reviewed: 2026-05-30_
 
 ---
 
@@ -37,8 +37,9 @@ _Last reviewed: 2026-05-22_
 
 ### Project intake
 
-- [x] Public guest form at `/request`
-- [x] Authenticated client form at `/portal/projects/new`
+- [x] Public two-step intake: `/projects/new` (service picker) → `/projects/new/details` (guest or signed-in client)
+- [x] Legacy redirects: `/request`, `/portal/projects/new` → `/projects/new`
+- [x] Signed-in clients can attach files on intake step 2
 - [x] Admin-managed **service types** (`/admin/settings/service-types`)
 - [x] Optional file attachments on intake
 - [x] Project list + detail for admin and client
@@ -89,7 +90,8 @@ _Last reviewed: 2026-05-22_
 - [x] On-site legal pages from markdown (`/legal/[slug]`)
 - [x] DOCX → markdown import script for legal docs
 - [x] Brand asset sync script
-- [x] Marketing landing page (`/`)
+- [x] Marketing landing page (`/`) with Option A nav cards (My Project, New Project, Shop)
+- [x] Public FAQ page (`/faq`) — workflow help migrated from former landing capability strip
 
 ### API
 

@@ -66,7 +66,7 @@ export default async function PortalHome() {
         )
       }
       actions={
-        <Link href="/portal/projects/new">
+        <Link href="/projects/new">
           <AppButton roleVariant="portal" iconRight={<ArrowRight className="h-4 w-4" />}>
             New request
           </AppButton>
@@ -79,7 +79,7 @@ export default async function PortalHome() {
           title="No projects yet."
           description="Start a new project request and the studio will receive it instantly."
           action={
-            <Link href="/portal/projects/new">
+            <Link href="/projects/new">
               <AppButton
                 roleVariant="portal"
                 iconLeft={<FilePlus className="h-3.5 w-3.5" />}

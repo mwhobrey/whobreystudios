@@ -37,7 +37,7 @@ const adminNav: NavItem[] = [
 
 const portalNav: NavItem[] = [
   { label: "Projects", href: "/portal" },
-  { label: "Start project", href: "/portal/projects/new" },
+  { label: "Start project", href: "/projects/new" },
 ];
 
 export async function AppShell({

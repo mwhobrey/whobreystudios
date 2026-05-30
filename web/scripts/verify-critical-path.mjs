@@ -48,6 +48,6 @@ assert.equal(computeFinalCheckoutCents(100_00, 40_00), 60_00);
 console.log("verify-critical-path: ok");
 console.log("");
 console.log("Manual E2E (Stripe sandbox + Resend):");
-console.log("  1. /request → admin quote → client magic link → approve → deposit");
+console.log("  1. /projects/new → admin quote → client magic link → approve → deposit");
 console.log("  2. Admin upload final → client pay balance → download final file");
 console.log("  3. stripe listen --forward-to localhost:3000/api/webhooks/stripe");
