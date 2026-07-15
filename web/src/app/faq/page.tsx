@@ -7,7 +7,7 @@ import { getAppUser } from "@/lib/auth";
 
 export const metadata = {
   title: "FAQ",
-  description: "How the Whobrey Studios client portal works — quotes, revisions, payments, and file delivery.",
+  description: "How the Whobrey Studios client portal handles quotes, revisions, payments, and file delivery.",
 };
 
 const faqs = [
@@ -18,7 +18,7 @@ const faqs = [
     answer: [
       "After you submit a project request, Whobrey Studios reviews your brief and builds a versioned quote with line items, materials, labor, and any included revisions.",
       "When the quote is sent, you'll receive access to review it in your client portal. You can approve, decline, or message the studio with questions before committing.",
-      "If you decline, the studio can revise the quote or close the project — you're never locked in without an explicit approval.",
+      "If you decline, the studio can revise the quote or close the project. You're never locked in without an explicit approval.",
       "Once approved, deposit payment is collected through secure checkout before production begins.",
     ],
   },
@@ -28,7 +28,7 @@ const faqs = [
     question: "How are revisions handled?",
     answer: [
       "Every proof round is tracked against the included revision count on your quote. You'll always know how many rounds remain before additional work may be quoted separately.",
-      "When you're on your second-to-last included revision, the portal warns you before scope drifts — so there are no surprises at final delivery.",
+      "When you're on your second-to-last included revision, the portal warns you before scope drifts, so there are no surprises at final delivery.",
       "Feedback can be left in the project message thread, keeping direction and history in one place instead of scattered texts or emails.",
       "The studio's default is two included revisions; individual quotes can override that when a project needs more or less flexibility.",
     ],
@@ -39,7 +39,7 @@ const faqs = [
     question: "When can I download final files?",
     answer: [
       "Draft files are shared during proof rounds so you can review work in progress. Final production files are delivered only after final payment is confirmed.",
-      "Downloads use short-lived signed links — files aren't sitting in a public folder. Access is checked on every request.",
+      "Downloads use short-lived signed links, not files sitting in a public folder. Access is checked on every request.",
       "Supported deliverables include design source files and production-ready exports (for example .ai, .png, and .svg), depending on what was quoted.",
       "If payment is still outstanding, the portal shows exactly what's blocking download so you know the next step.",
     ],
@@ -49,8 +49,8 @@ const faqs = [
     icon: HelpCircle,
     question: "Can I order physical products like decals or apparel?",
     answer: [
-      "Yes — Whobrey Studios offers physical products including vinyl decals, signage, and branded merchandise.",
-      "The online shop for browse-and-buy items is rolling out separately from custom project work. Until your shop link is live here, ask the studio about pickup, delivery, and catalog items when you submit a project.",
+      "Yes. Whobrey Studios offers physical products including vinyl decals, signage, and branded merchandise.",
+      "The online shop for browse-and-buy items is rolling out separately from custom project work. Ask the studio about pickup, delivery, and catalog items when you submit a project.",
       "Custom vinyl, wraps, and print jobs still flow through the project portal so quotes, proofs, and revisions stay organized.",
     ],
   },
@@ -59,7 +59,7 @@ const faqs = [
     icon: HelpCircle,
     question: "Do I need an account to start?",
     answer: [
-      "No — you can submit a new project request without signing in. Use the New Project path on the home page, pick your service type, and fill in your contact details.",
+      "No. You can submit a new project request without signing in. Use the New Project path on the home page, pick your service type, and fill in your contact details.",
       "After submitting, sign in with the same email address to see your project, messages, quotes, and files in the client portal.",
       "If you already have an active project, use My Project to sign in and pick up where you left off.",
     ],

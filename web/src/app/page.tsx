@@ -41,7 +41,7 @@ export default async function Home() {
             </h1>
             <p className="mt-6 max-w-xl text-balance text-base text-text-muted sm:text-lg">
               From logos and digital brand assets to vinyl decals, signage, and wide-format
-              deliverables — submit your project, review proofs, and receive final files in one
+              deliverables, submit your project, review proofs, and receive final files in one
               secure client area.
             </p>
 
@@ -117,13 +117,13 @@ function HeroArtifact() {
         </div>
 
         <p className="mt-4 ws-mono text-xs text-text-faint uppercase tracking-wider">
-          Project · Vinyl decal — vehicle wrap
+          Project · Vinyl decal · vehicle wrap
         </p>
         <h3 className="mt-1 text-lg font-semibold text-text-primary">Northwood Auto LLC</h3>
 
         <ul className="mt-4 space-y-2 text-sm">
           {[
-            ["Brand concept pack — 3 directions", "$ 480.00"],
+            ["Brand concept pack · 3 directions", "$ 480.00"],
             ["Vehicle wrap layout", "$ 720.00"],
             ["2 included revisions", "$ 0.00"],
           ].map(([label, amt]) => (

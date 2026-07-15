@@ -87,7 +87,7 @@ export default async function PortalProjectDetailPage({ params, searchParams }: 
     >
       {paymentFlash === "success" ? (
         <AlertBanner tone="success">
-          Payment received — thank you. This page will update as soon as processing completes.
+          Payment received. Thank you. This page will update as soon as processing completes.
         </AlertBanner>
       ) : null}
       {paymentFlash === "cancelled" ? (
@@ -240,7 +240,7 @@ export default async function PortalProjectDetailPage({ params, searchParams }: 
               id="payment-balance"
               icon={<FileSignature className="h-4 w-4" />}
               title="Balance due"
-              subtitle="Pay anytime during the project — no need to wait for final delivery"
+              subtitle="Pay anytime during the project. No need to wait for final delivery"
             >
               <PaymentPanel
                 projectId={project.id}

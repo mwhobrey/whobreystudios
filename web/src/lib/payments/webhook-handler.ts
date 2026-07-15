@@ -80,7 +80,7 @@ async function handleCheckoutSessionCompleted(
         to: "completed",
         notifyClient: true,
         title: "Final payment received",
-        body: "Thank you — your final files are now available to download.",
+        body: "Thank you. Your final files are now available to download.",
       });
     } else if (project.status !== "completed" && project.status !== "cancelled") {
       await transitionProjectStatus({
@@ -88,7 +88,7 @@ async function handleCheckoutSessionCompleted(
         to: "completed",
         notifyClient: true,
         title: "Payment received",
-        body: "Thank you — your payment was received.",
+        body: "Thank you. Your payment was received.",
       });
     }
   }

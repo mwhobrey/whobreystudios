@@ -28,7 +28,7 @@ export default async function LoginPage() {
             </p>
             <p className="mt-6 text-sm text-text-muted">
               Whobrey Studios runs one workflow across digital assets, vinyl decals, and production
-              jobs — request, quote, approve, produce, deliver, get paid.
+              jobs: request, quote, approve, produce, deliver, get paid.
             </p>
           </div>
 
@@ -55,7 +55,7 @@ export default async function LoginPage() {
               </h1>
               <p className="mt-2 text-sm text-text-muted">
                 Enter the email you used for your project request. We&rsquo;ll send a one-time sign-in
-                link — no password required.
+                link. No password required.
               </p>
             </div>
 

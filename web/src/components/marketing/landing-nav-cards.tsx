@@ -55,7 +55,7 @@ export function LandingNavCards({
       id: "shop",
       title: "Shop",
       description: shopHref
-        ? "Browse and purchase products — from decals to hoodies — for local pickup or delivery."
+        ? "Browse and purchase products, from decals to hoodies, for local pickup or delivery."
         : "Physical products are coming soon. Ask the studio about decals, apparel, and pickup options in the meantime.",
       href: shopHref ?? "/faq#shop",
       icon: ShoppingBag,

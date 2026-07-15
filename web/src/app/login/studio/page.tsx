@@ -35,7 +35,7 @@ export default async function StudioLoginPage({ searchParams }: Props) {
           <div className="ws-fade-up max-w-md">
             <p className="ws-eyebrow text-text-faint">Studio operations</p>
             <p className="ws-display mt-6 text-balance text-3xl leading-snug text-text-primary lg:text-4xl">
-              Quotes, files, and production status — one honest dashboard.
+              Quotes, files, and production status: one honest dashboard.
             </p>
             <p className="mt-6 text-sm text-text-muted">
               Admin access uses studio credentials. Client magic links are disabled for staff

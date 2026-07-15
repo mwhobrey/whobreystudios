@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     template: "%s · Whobrey Studios",
   },
   description:
-    "Whobrey Studios client portal for design and production work — digital assets, vinyl decal projects, quote approvals, revisions, secure file delivery, and messaging.",
+    "Whobrey Studios client portal for design and production work: digital assets, vinyl decal projects, quote approvals, revisions, secure file delivery, and messaging.",
   applicationName: "Whobrey Studios",
   authors: [{ name: "Whobrey Studios" }],
   manifest: "/manifest.webmanifest",

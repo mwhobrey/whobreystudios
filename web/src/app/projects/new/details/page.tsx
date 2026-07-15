@@ -47,7 +47,7 @@ export default async function NewProjectDetailsPage({ searchParams }: Props) {
         <p className="mt-3 max-w-xl text-sm text-text-muted sm:text-base">
           {mode === "guest"
             ? "No account required. After you submit, sign in with the same email to track progress in the client portal."
-            : "You're signed in — we'll add this project to your portal and notify the studio right away."}
+            : "You're signed in. We'll add this project to your portal and notify the studio right away."}
         </p>
       </div>
 

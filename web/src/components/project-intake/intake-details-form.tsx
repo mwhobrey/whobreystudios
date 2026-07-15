@@ -284,7 +284,7 @@ export function IntakeDetailsForm({
             label="Business name"
             error={fieldError(state, "businessName")}
             className="sm:col-span-2"
-            hint="Optional — leave blank if this is a personal project."
+            hint="Optional. Leave blank if this is a personal project."
           >
             <input name="businessName" autoComplete="organization" className="ws-input" />
           </FormField>
@@ -350,7 +350,7 @@ export function IntakeDetailsForm({
 
           <FormField
             label="Notes & direction"
-            hint="Sizes, tone, links to inspiration — anything that helps."
+            hint="Sizes, tone, links to inspiration, anything that helps."
             error={fieldError(state, "notes")}
           >
             <textarea
@@ -367,7 +367,7 @@ export function IntakeDetailsForm({
         <Section
           icon={<Paperclip className="h-4 w-4" />}
           title="Attachments"
-          subtitle="Optional — references, mood boards, existing brand assets."
+          subtitle="Optional. References, mood boards, existing brand assets."
         >
           <label
             htmlFor="attachments-input"
