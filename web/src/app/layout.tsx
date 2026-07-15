@@ -15,15 +15,26 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
+const siteDescription =
+  "Graphic design, vinyl decals, vehicle wraps, and wide-format production from Whobrey Studios, with a client portal for quotes, revisions, and secure file delivery.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL("https://whobreystudios.com"),
   title: {
     default: "Whobrey Studios",
     template: "%s · Whobrey Studios",
   },
-  description:
-    "Whobrey Studios client portal for design and production work: digital assets, vinyl decal projects, quote approvals, revisions, secure file delivery, and messaging.",
+  description: siteDescription,
   applicationName: "Whobrey Studios",
   authors: [{ name: "Whobrey Studios" }],
+  keywords: [
+    "graphic design",
+    "vinyl decals",
+    "vehicle wraps",
+    "signage",
+    "wide-format printing",
+    "brand design",
+  ],
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
@@ -34,23 +45,36 @@ export const metadata: Metadata = {
     icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
     apple: [{ url: "/brand/icon-192.png", sizes: "192x192" }],
   },
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
+    siteName: "Whobrey Studios",
     title: "Whobrey Studios",
-    description:
-      "Client portal for digital assets and production work with quote approvals, revisions, secure file delivery, and messaging.",
+    description: siteDescription,
+    url: "/",
     type: "website",
+    locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
     title: "Whobrey Studios",
-    description:
-      "Client portal for digital assets and production work with quote approvals, revisions, secure file delivery, and messaging.",
+    description: siteDescription,
   },
 };
 
 export const viewport: Viewport = {
   themeColor: "#000000",
   colorScheme: "dark",
+};
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Whobrey Studios",
+  url: "https://whobreystudios.com",
+  logo: "https://whobreystudios.com/brand/logo-horizontal.png",
+  description: siteDescription,
 };
 
 export default function RootLayout({
@@ -64,6 +88,11 @@ export default function RootLayout({
       className={`${manrope.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="relative min-h-full flex flex-col">
+        <script
+          type="application/ld+json"
+          // Static, hardcoded object — safe to serialize directly.
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
         {children}
         <VercelObservability />
       </body>

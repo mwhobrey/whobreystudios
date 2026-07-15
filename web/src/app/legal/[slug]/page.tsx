@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
@@ -14,6 +15,20 @@ type Props = { params: Promise<{ slug: string }> };
 
 export function generateStaticParams() {
   return LEGAL_SLUGS.map((slug) => ({ slug }));
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  if (!isLegalSlug(slug)) return {};
+
+  const doc = await getLegalDocument(slug);
+  if (!doc) return {};
+
+  return {
+    title: doc.title,
+    description: `${doc.title} for Whobrey Studios.`,
+    alternates: { canonical: `/legal/${slug}` },
+  };
 }
 
 export default async function LegalPage({ params }: Props) {

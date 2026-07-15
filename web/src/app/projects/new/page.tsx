@@ -6,6 +6,7 @@ import { INTAKE_CATEGORIES } from "@/lib/project-intake/categories";
 export const metadata: Metadata = {
   title: "New project",
   description: "Choose what you want to create with Whobrey Studios.",
+  alternates: { canonical: "/projects/new" },
 };
 
 export default function NewProjectPickerPage() {

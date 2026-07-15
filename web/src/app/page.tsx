@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { getAppUser } from "@/lib/auth";
@@ -5,6 +6,11 @@ import { getWorkspaceSettings } from "@/lib/data/workspace-settings";
 import { LandingNavCards } from "@/components/marketing/landing-nav-cards";
 import { MarketingHeader } from "@/components/marketing/marketing-header";
 import { Wordmark } from "@/components/brand/wordmark";
+
+export const metadata: Metadata = {
+  title: { absolute: "Whobrey Studios | Graphic Design, Vinyl Decals & Vehicle Wraps" },
+  alternates: { canonical: "/" },
+};
 
 export default async function Home() {
   const user = await getAppUser();

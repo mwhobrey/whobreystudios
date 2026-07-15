@@ -8,6 +8,7 @@ import { getAppUser } from "@/lib/auth";
 export const metadata = {
   title: "FAQ",
   description: "How the Whobrey Studios client portal handles quotes, revisions, payments, and file delivery.",
+  alternates: { canonical: "/faq" },
 };
 
 const faqs = [
