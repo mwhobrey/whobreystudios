@@ -63,7 +63,7 @@ export default async function Home() {
             <div>
               <p className="ws-eyebrow text-text-faint">Get started</p>
               <h2 className="ws-display mt-2 text-3xl tracking-tight text-text-primary sm:text-4xl">
-                What brings you here today?
+                Ready to explore the possibilities?
               </h2>
             </div>
             <Link
