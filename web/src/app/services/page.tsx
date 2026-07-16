@@ -6,6 +6,7 @@ import { Wordmark } from "@/components/brand/wordmark";
 import { AppButton } from "@/components/ui/app-button";
 import { AlertBanner } from "@/components/ui/alert-banner";
 import { getAppUser } from "@/lib/auth";
+import { intakeDetailsHref } from "@/lib/project-intake/categories";
 import { SERVICE_CATALOG, SERVICE_PRICING_DISCLAIMER } from "@/lib/services/catalog";
 
 export const metadata: Metadata = {
@@ -57,29 +58,38 @@ export default async function ServicesPage() {
         </AlertBanner>
 
         <div className="mt-8 space-y-6">
-          {SERVICE_CATALOG.map(({ id, title, startingAt, icon: Icon, summary, details }) => (
-            <article
-              key={id}
-              id={id}
-              className="ws-glass scroll-mt-24 rounded-2xl border border-[color:var(--border-default)] p-6 sm:p-8"
-            >
-              <div className="flex items-start gap-3">
-                <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[color:var(--border-default)] bg-[color:var(--surface-overlay)] text-[color:var(--brand-primary)]">
-                  <Icon className="h-4 w-4" aria-hidden="true" />
-                </span>
-                <div>
-                  <h2 className="text-lg font-semibold text-text-primary">{title}</h2>
-                  <p className="mt-1 text-sm font-medium text-[color:var(--brand-primary)]">
-                    {startingAt}
-                  </p>
-                  <div className="mt-4 space-y-3 text-sm leading-relaxed text-text-muted">
-                    <p>{summary}</p>
-                    <p>{details}</p>
+          {SERVICE_CATALOG.map(
+            ({ id, title, startingAt, icon: Icon, summary, details, intakeCategory }) => (
+              <article
+                key={id}
+                id={id}
+                className="ws-glass scroll-mt-24 rounded-2xl border border-[color:var(--border-default)] p-6 sm:p-8"
+              >
+                <div className="flex items-start gap-3">
+                  <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[color:var(--border-default)] bg-[color:var(--surface-overlay)] text-[color:var(--brand-primary)]">
+                    <Icon className="h-4 w-4" aria-hidden="true" />
+                  </span>
+                  <div className="flex-1">
+                    <h2 className="text-lg font-semibold text-text-primary">{title}</h2>
+                    <p className="mt-1 text-sm font-medium text-[color:var(--brand-primary)]">
+                      {startingAt}
+                    </p>
+                    <div className="mt-4 space-y-3 text-sm leading-relaxed text-text-muted">
+                      <p>{summary}</p>
+                      <p>{details}</p>
+                    </div>
+                    <Link
+                      href={intakeDetailsHref(intakeCategory)}
+                      className="ws-focus-ring mt-5 inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border-default)] px-4 py-2 text-sm font-medium text-text-primary transition hover:border-[color:var(--brand-primary)] hover:text-[color:var(--brand-primary)]"
+                    >
+                      Get started
+                      <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                    </Link>
                   </div>
                 </div>
-              </div>
-            </article>
-          ))}
+              </article>
+            ),
+          )}
         </div>
 
         <section className="mt-16 ws-elevated relative overflow-hidden p-8 text-center">

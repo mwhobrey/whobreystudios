@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import { Image, Palette, Printer, Smartphone, Sticker } from "lucide-react";
+import type { IntakeCategorySlug } from "@/lib/project-intake/categories";
 
 export type ServiceEntry = {
   id: string;
@@ -8,6 +9,8 @@ export type ServiceEntry = {
   icon: LucideIcon;
   summary: string;
   details: string;
+  /** Intake category to jump straight into from this service's "Get started" button. */
+  intakeCategory: IntakeCategorySlug;
 };
 
 export const SERVICE_CATALOG: ServiceEntry[] = [
@@ -16,6 +19,7 @@ export const SERVICE_CATALOG: ServiceEntry[] = [
     title: "Logo & Brand Systems",
     startingAt: "Projects starting at $450",
     icon: Palette,
+    intakeCategory: "digital",
     summary:
       "Professional logo and identity systems built for consistent use across digital platforms, print materials, apparel, signage, merchandise, and other real-world applications.",
     details:
@@ -26,6 +30,7 @@ export const SERVICE_CATALOG: ServiceEntry[] = [
     title: "Digital Media",
     startingAt: "Projects starting at $65",
     icon: Image,
+    intakeCategory: "digital",
     summary:
       "Custom graphics for social media, websites, digital campaigns, advertising, presentations, promotional materials, and branded content.",
     details:
@@ -36,6 +41,7 @@ export const SERVICE_CATALOG: ServiceEntry[] = [
     title: "App Icons & Digital Icon Systems",
     startingAt: "Projects starting at $350",
     icon: Smartphone,
+    intakeCategory: "digital",
     summary:
       "Original app icons and coordinated digital icon systems designed for clear recognition, small-scale use, and modern platform requirements.",
     details:
@@ -46,6 +52,7 @@ export const SERVICE_CATALOG: ServiceEntry[] = [
     title: "Vinyl Decals & Lettering",
     startingAt: "Minimum physical order: $15",
     icon: Sticker,
+    intakeCategory: "vinyl",
     summary:
       "Custom cut-vinyl decals and lettering for personal, promotional, and business applications.",
     details:
@@ -56,6 +63,7 @@ export const SERVICE_CATALOG: ServiceEntry[] = [
     title: "3D Printing & Custom Modeling",
     startingAt: "Projects starting at $20",
     icon: Printer,
+    intakeCategory: "3d-printing",
     summary:
       "Custom 3D-printed products, prototypes, functional components, replacement parts, branded items, and short production runs.",
     details:
