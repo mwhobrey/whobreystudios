@@ -6,7 +6,10 @@ import { track } from "@vercel/analytics";
 export type ClientAnalyticsEvent =
   | { name: "intake_category_viewed"; data: { category: string } }
   | { name: "intake_submitted"; data: { category: string; mode: "guest" | "client" } }
-  | { name: "landing_card_clicked"; data: { card: "my_project" | "new_project" | "shop" } };
+  | {
+      name: "landing_card_clicked";
+      data: { card: "services" | "shop" | "client_portal" | "new_project" };
+    };
 
 export function trackClientEvent(event: ClientAnalyticsEvent) {
   track(event.name, event.data);

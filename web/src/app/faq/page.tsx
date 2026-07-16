@@ -62,7 +62,7 @@ const faqs = [
     answer: [
       "No. You can submit a new project request without signing in. Use the New Project path on the home page, pick your service type, and fill in your contact details.",
       "After submitting, sign in with the same email address to see your project, messages, quotes, and files in the client portal.",
-      "If you already have an active project, use My Project to sign in and pick up where you left off.",
+      "If you already have an active project, use Client Portal to sign in and pick up where you left off.",
     ],
   },
 ] as const;
@@ -146,7 +146,7 @@ export default async function FaqPage() {
                 href="/login"
                 className="ws-focus-ring inline-flex rounded-xl border border-[color:var(--border-default)] px-5 py-2.5 text-sm font-medium text-text-primary transition hover:border-[color:var(--border-strong)]"
               >
-                My project
+                Client Portal
               </Link>
             </div>
           </div>

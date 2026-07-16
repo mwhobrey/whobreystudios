@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
-import { ArrowRight, FolderOpen, ShoppingBag, Sparkles } from "lucide-react";
+import { ArrowRight, FolderOpen, LayoutList, ShoppingBag, Sparkles } from "lucide-react";
 import { trackClientEvent } from "@/lib/analytics/track-client-event";
 import { cx } from "@/lib/ui";
 
-type CardId = "my_project" | "new_project" | "shop";
+type CardId = "services" | "shop" | "client_portal" | "new_project";
 
 type Card = {
   id: CardId;
@@ -32,8 +32,29 @@ export function LandingNavCards({
 }: Props) {
   const cards: Card[] = [
     {
-      id: "my_project",
-      title: "My Project",
+      id: "services",
+      title: "Services",
+      description: "See what Whobrey Studios offers and where pricing typically starts.",
+      href: "/services",
+      icon: LayoutList,
+      accent:
+        "border-[color:var(--status-info-ring)]/40 hover:border-[color:var(--status-info-ring)]/70",
+    },
+    {
+      id: "shop",
+      title: "Shop",
+      description: shopHref
+        ? "Browse and purchase products, from decals to hoodies, for local pickup or delivery."
+        : "Physical products are coming soon. Ask the studio about decals, apparel, and pickup options in the meantime.",
+      href: shopHref ?? "/faq#shop",
+      icon: ShoppingBag,
+      accent:
+        "border-[color:var(--status-success-ring)]/40 hover:border-[color:var(--status-success-ring)]/70",
+      external: Boolean(shopHref),
+    },
+    {
+      id: "client_portal",
+      title: "Client Portal",
       description:
         "Log in to access and manage an existing project with Whobrey Studios.",
       href: myProjectHref,
@@ -51,23 +72,11 @@ export function LandingNavCards({
       accent: "border-[color:var(--brand-primary)]/50 hover:border-[color:var(--brand-primary)]",
       featured: true,
     },
-    {
-      id: "shop",
-      title: "Shop",
-      description: shopHref
-        ? "Browse and purchase products, from decals to hoodies, for local pickup or delivery."
-        : "Physical products are coming soon. Ask the studio about decals, apparel, and pickup options in the meantime.",
-      href: shopHref ?? "/faq#shop",
-      icon: ShoppingBag,
-      accent:
-        "border-[color:var(--status-success-ring)]/40 hover:border-[color:var(--status-success-ring)]/70",
-      external: Boolean(shopHref),
-    },
   ];
 
   return (
     <section aria-label="Get started">
-      <div className="grid gap-4 md:grid-cols-3 md:gap-5">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 md:gap-5">
         {cards.map(({ id, title, description, href, icon: Icon, accent, featured, external }) => {
           const onNavigate = () => {
             trackClientEvent({ name: "landing_card_clicked", data: { card: id } });
