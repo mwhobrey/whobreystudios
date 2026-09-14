@@ -15,15 +15,17 @@ export const metadata: Metadata = {
 };
 
 type Props = {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; kind?: string }>;
 };
 
 export default async function NewProjectDetailsPage({ searchParams }: Props) {
-  const { category: categorySlug } = await searchParams;
+  const { category: categorySlug, kind } = await searchParams;
   const category = getIntakeCategory(categorySlug);
   if (!category) {
     redirect("/projects/new");
   }
+
+  const isLogoKind = category.slug === "digital" && kind === "logo";
 
   const user = await getAppUser();
   const mode = user?.role === "client" ? "client" : "guest";
@@ -42,7 +44,9 @@ export default async function NewProjectDetailsPage({ searchParams }: Props) {
       <div className="mb-8">
         <p className="ws-eyebrow text-text-faint">Step 2 of 2</p>
         <h2 className="ws-display mt-2 text-2xl tracking-tight text-text-primary sm:text-3xl">
-          Tell us about your {category.label.toLowerCase()} project.
+          {isLogoKind
+            ? "Tell us about your logo design project."
+            : `Tell us about your ${category.label.toLowerCase()} project.`}
         </h2>
         <p className="mt-3 max-w-xl text-sm text-text-muted sm:text-base">
           {mode === "guest"
@@ -53,6 +57,7 @@ export default async function NewProjectDetailsPage({ searchParams }: Props) {
 
       <IntakeDetailsForm
         category={category}
+        kind={kind}
         mode={mode}
         defaultFullName={user?.name}
         defaultEmail={user?.email}

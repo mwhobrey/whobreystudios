@@ -53,6 +53,7 @@ export function getIntakeCategory(slug: string | null | undefined): IntakeCatego
   return INTAKE_CATEGORIES.find((c) => c.slug === slug) ?? null;
 }
 
-export function intakeDetailsHref(slug: IntakeCategorySlug): string {
-  return `/projects/new/details?category=${slug}`;
+export function intakeDetailsHref(slug: IntakeCategorySlug, kind?: string): string {
+  const base = `/projects/new/details?category=${slug}`;
+  return kind ? `${base}&kind=${kind}` : base;
 }

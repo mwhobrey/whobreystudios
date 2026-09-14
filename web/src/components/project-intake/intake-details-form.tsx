@@ -32,6 +32,7 @@ import { trackClientEvent } from "@/lib/analytics/track-client-event";
 import { AppButton } from "@/components/ui/app-button";
 import { AlertBanner } from "@/components/ui/alert-banner";
 import { FormField } from "@/components/ui/form-field";
+import { LogoIntakeFields } from "@/components/project-intake/logo-intake-fields";
 import { formatFileSize } from "@/lib/format";
 import { cx } from "@/lib/ui";
 
@@ -39,6 +40,7 @@ type Mode = "guest" | "client";
 
 type Props = {
   category: IntakeCategory;
+  kind?: string;
   mode: Mode;
   defaultFullName?: string | null;
   defaultEmail?: string | null;
@@ -53,10 +55,12 @@ function fieldError(
 
 export function IntakeDetailsForm({
   category,
+  kind,
   mode,
   defaultFullName,
   defaultEmail,
 }: Props) {
+  const isLogoKind = category.slug === "digital" && kind === "logo";
   const [guestState, guestAction, guestPending] = useActionState(guestRequestFormAction, {});
   const [clientState, clientAction, clientPending] = useActionState(createProjectFormAction, {});
 
@@ -73,7 +77,11 @@ export function IntakeDetailsForm({
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
-  const projectTypeDefault = category.requiresCustomType ? "" : category.label;
+  const projectTypeDefault = category.requiresCustomType
+    ? ""
+    : isLogoKind
+      ? "Logo Design"
+      : category.label;
 
   const setNativeFiles = useCallback((nextFiles: File[]) => {
     if (!fileInputRef.current) return;
@@ -326,7 +334,7 @@ export function IntakeDetailsForm({
       <Section
         icon={<Sparkles className="h-4 w-4" />}
         title="Project details"
-        subtitle={category.description}
+        subtitle={isLogoKind ? "The essentials we need to design your logo." : category.description}
       >
         <div className="grid gap-4">
           {category.requiresCustomType ? (
@@ -348,18 +356,22 @@ export function IntakeDetailsForm({
             <input name="deadline" type="datetime-local" className="ws-input" />
           </FormField>
 
-          <FormField
-            label="Notes & direction"
-            hint="Sizes, tone, links to inspiration, anything that helps."
-            error={fieldError(state, "notes")}
-          >
-            <textarea
-              name="notes"
-              rows={5}
-              placeholder="Tell us about the scope, style, and any references you have in mind…"
-              className="ws-input"
-            />
-          </FormField>
+          {isLogoKind ? (
+            <LogoIntakeFields />
+          ) : (
+            <FormField
+              label="Notes & direction"
+              hint="Sizes, tone, links to inspiration, anything that helps."
+              error={fieldError(state, "notes")}
+            >
+              <textarea
+                name="notes"
+                rows={5}
+                placeholder="Tell us about the scope, style, and any references you have in mind…"
+                className="ws-input"
+              />
+            </FormField>
+          )}
         </div>
       </Section>
 

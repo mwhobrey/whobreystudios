@@ -103,7 +103,7 @@ Intake UX config (static categories, not DB): `lib/project-intake/categories.ts`
 | `components/notification-bell.tsx` | In-app notification dropdown |
 | `components/brand/wordmark.tsx` | Brand mark |
 | `components/marketing/*` | Public landing header, intake shell, nav cards |
-| `components/project-intake/*` | Service picker, unified intake details form |
+| `components/project-intake/*` | Service picker, unified intake details form, logo design questionnaire (`logo-intake-fields.tsx`, `?kind=logo` on the `digital` category) |
 | `components/analytics/*` | Vercel Web Analytics + Speed Insights; intake funnel trackers |
 | `lib/analytics/track-client-event.ts` | Typed custom event helper (no PII) |
 

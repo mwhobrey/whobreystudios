@@ -4,7 +4,7 @@ What works today, what doesn't, and what to build next. **This file should chang
 
 **See also:** [00_INDEX.md](./00_INDEX.md) · [DESIGN.md](../../DESIGN.md) · [docs/linear-workspace.md](../linear-workspace.md)
 
-_Last reviewed: 2026-05-30_
+_Last reviewed: 2026-09-14_
 
 ---
 
@@ -42,6 +42,7 @@ _Last reviewed: 2026-05-30_
 - [x] Signed-in clients can attach files on intake step 2
 - [x] Admin-managed **service types** (`/admin/settings/service-types`)
 - [x] Optional file attachments on intake
+- [x] Logo design questionnaire (Services → "Logo & Brand Systems" → Get started) replaces the free-text notes field on the `digital` intake with structured Qs; answers are compiled into `Project.notes` — no dedicated DB fields
 - [x] Project list + detail for admin and client
 
 ### Quotes

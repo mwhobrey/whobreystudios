@@ -11,6 +11,8 @@ export type ServiceEntry = {
   details: string;
   /** Intake category to jump straight into from this service's "Get started" button. */
   intakeCategory: IntakeCategorySlug;
+  /** Optional intake sub-flow (e.g. the logo design questionnaire) within that category. */
+  intakeKind?: string;
 };
 
 export const SERVICE_CATALOG: ServiceEntry[] = [
@@ -20,6 +22,7 @@ export const SERVICE_CATALOG: ServiceEntry[] = [
     startingAt: "Projects starting at $450",
     icon: Palette,
     intakeCategory: "digital",
+    intakeKind: "logo",
     summary:
       "Professional logo and identity systems built for consistent use across digital platforms, print materials, apparel, signage, merchandise, and other real-world applications.",
     details:

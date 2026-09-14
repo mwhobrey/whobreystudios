@@ -59,7 +59,7 @@ export default async function ServicesPage() {
 
         <div className="mt-8 space-y-6">
           {SERVICE_CATALOG.map(
-            ({ id, title, startingAt, icon: Icon, summary, details, intakeCategory }) => (
+            ({ id, title, startingAt, icon: Icon, summary, details, intakeCategory, intakeKind }) => (
               <article
                 key={id}
                 id={id}
@@ -79,7 +79,7 @@ export default async function ServicesPage() {
                       <p>{details}</p>
                     </div>
                     <Link
-                      href={intakeDetailsHref(intakeCategory)}
+                      href={intakeDetailsHref(intakeCategory, intakeKind)}
                       className="ws-focus-ring mt-5 inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border-default)] px-4 py-2 text-sm font-medium text-text-primary transition hover:border-[color:var(--brand-primary)] hover:text-[color:var(--brand-primary)]"
                     >
                       Get started
