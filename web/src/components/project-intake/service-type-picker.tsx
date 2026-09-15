@@ -35,7 +35,7 @@ export function ServiceTypePicker({ options }: { options: Option[] }) {
         return (
           <Link
             key={slug}
-            href={intakeDetailsHref(slug)}
+            href={intakeDetailsHref(slug, slug === "digital" ? "logo" : undefined)}
             className="ws-focus-ring group ws-glass flex min-h-[120px] flex-col items-center justify-center rounded-2xl border-2 border-[color:var(--border-default)] px-4 py-6 text-center transition hover:border-[color:var(--brand-primary)] hover:-translate-y-0.5 hover:shadow-[var(--shadow-floating)] sm:min-h-[140px]"
           >
             <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-inset)] text-[color:var(--brand-primary)] transition group-hover:border-[color:var(--brand-primary)]/40">
