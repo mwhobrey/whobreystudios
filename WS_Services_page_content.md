@@ -28,7 +28,7 @@ Services may include custom app-icon concepts, platform-ready variations, develo
 
 Custom cut-vinyl decals and lettering for personal, promotional, and business applications.
 
-Available work includes names, lettering, window graphics, business identification, layered decals, and repeat production orders. Pricing depends on dimensions, detail, number of colors, quantity, artwork condition, and installation or production requirements.
+Available work includes names, lettering, window graphics, business identification, layered decals, and repeat production orders. Pricing depends on dimensions, detail, number of colors, quantity, artwork condition, and installation or production requirements. AI-generated artwork: AI images must be redrawn before we can print or cut them. AI Artwork Conversion is Simple $35, Standard $75, or Complex $150+, quoted before work begins.
 
 ## 3D Printing & Custom Modeling
 

@@ -5,7 +5,7 @@ source: content/legal/Whobrey_Studios_Terms_of_Service.docx
 
 __Terms of Service__
 
-*Whobrey Studios — Effective May 20, 2026*
+*Whobrey Studios — Effective November 3, 2026*
 
 These Terms of Service (“Terms”) govern access to and use of the Whobrey Studios website and any related inquiries, design services, creative services, digital deliverables, printed goods, decals, merchandise, 3D-printed products, consulting, and client work offered by Whobrey Studios (“Company,” “we,” “us,” or “our”). By using the website, submitting an inquiry, requesting a quote, placing an order, or paying an invoice, you agree to these Terms.
 
@@ -42,6 +42,20 @@ Unless otherwise agreed in writing, we may display completed work, mockups, or f
 If you provide logos, photos, artwork, fonts, or other assets, you represent that you have the right to use them and authorize us to use them for the requested work.
 
 You agree to indemnify and hold us harmless from claims arising from client-supplied materials, including trademark, copyright, privacy, publicity, or licensing disputes.
+
+## 5A. AI-Generated Artwork
+
+“AI-generated artwork” means any image, logo, or design made in whole or in part with an artificial-intelligence tool, whether you supply it or ask us to work from it.
+
+AI-generated images are treated as concept references, not production files. Before any printing, cutting, or production, they must be recreated or cleaned up by us, which may include redrawing, vectorizing, simplifying, or color-separating the artwork.
+
+An AI Artwork Conversion fee applies, based on complexity. It will be quoted and approved before work begins and is separate from materials, production, and other design services.
+
+Redrawn artwork is our interpretation of the original image. Lettering, lines, colors, gradients, shading, and fine details may be simplified or adjusted for the production method, so the final result may differ slightly from the original. Approving the proof confirms you accept those differences.
+
+You are solely responsible for the rights, licensing, and permitted use of any AI-generated artwork you provide, including the AI tool’s terms of use and any trademarks, copyrights, or likenesses it may contain. We do not guarantee that AI-generated artwork is original, protectable, or free of third-party claims. The indemnity in Section 5 applies to all AI-generated artwork.
+
+We may decline or stop work on AI-generated artwork that appears to copy protected logos, characters, or likenesses, is too low in quality to reproduce, or conflicts with our business standards.
 
 ## 6. Payment Terms
 
